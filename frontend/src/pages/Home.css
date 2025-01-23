@@ -1,0 +1,39 @@
+.home-page {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .featured-concours,
+  .preparation {
+    margin-bottom: 4rem;
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+  }
+  
+  .concours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  
+  @media (max-width: 768px) {
+    main {
+      padding: 1rem;
+    }
+  
+    .concours-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  
