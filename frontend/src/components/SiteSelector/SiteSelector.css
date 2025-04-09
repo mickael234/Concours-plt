@@ -1,0 +1,99 @@
+.site-selector {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .site-selector-toggle {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .current-site {
+    font-weight: 600;
+    margin: 0 5px;
+  }
+  
+  .chevron {
+    transition: transform 0.2s ease;
+  }
+  
+  .chevron.open {
+    transform: rotate(180deg);
+  }
+  
+  .site-selector-dropdown {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    width: 400px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    overflow: hidden;
+  }
+  
+  .site-option {
+    display: flex;
+    padding: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .site-option:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .site-option.active {
+    background-color: #e0f7f1;
+  }
+  
+  .site-option-radio {
+    margin-right: 15px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .radio-outer {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .radio-outer.active {
+    border-color: #2ecc71;
+  }
+  
+  .radio-inner {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #2ecc71;
+  }
+  
+  .site-option-content {
+    flex: 1;
+  }
+  
+  .site-name {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  
+  .site-type {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  
+  

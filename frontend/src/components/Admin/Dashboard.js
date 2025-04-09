@@ -1,79 +1,87 @@
-import React, { useState, useEffect } from 'react';
-import './Admin.css';
-import ConcoursManager from './ConcoursManager';
-import ResourceManager from './ResourceManager';
-import EstablishmentManager from './EstablishmentManager';
-import Statistics from './Statistics';
+"use client"
 
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('statistics');
-  const [stats, setStats] = useState({
-    totalConcours: 0,
-    totalUsers: 0,
-    totalEstablishments: 0,
-    totalResources: 0,
-  });
+import { useState, useEffect } from "react"
+import "./AdminDashboard.css"
+import ConcoursManager from "./ConcoursManager"
+import ResourceManager from "./ResourcesManager"
+import EstablishmentManager from "./EstablishmentManager"
+import UserManager from "./UserManager"
+import Statistics from "./Statistics"
+import { fetchStats } from "../../services/api"
+
+const AdminDashboard = () => {
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [activeTab, setActiveTab] = useState("statistics")
 
   useEffect(() => {
-    // Fetch dashboard stats from backend
-    // This is a placeholder. Replace with actual API call
-    fetchStats();
-  }, []);
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const response = await fetchStats()
+        console.log("Stats fetched:", response) // Log the response
+        setStats(response)
+        setError(null)
+      } catch (err) {
+        console.error("Error fetching stats:", err)
+        setError(err.message || "Une erreur s'est produite lors du chargement des statistiques")
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  const fetchStats = async () => {
-    // Replace this with an actual API call
-    setStats({
-      totalConcours: 150,
-      totalUsers: 5000,
-      totalEstablishments: 75,
-      totalResources: 200,
-    });
-  };
+    fetchData()
+  }, [])
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "statistics":
+        return <Statistics stats={stats} loading={loading} error={error} />
+      case "concours":
+        return <ConcoursManager />
+      case "establishments":
+        return <EstablishmentManager />
+      case "resources":
+        return <ResourceManager />
+      case "users":
+        return <UserManager />
+      default:
+        return <div>Sélectionnez un onglet</div>
+    }
+  }
 
   return (
     <div className="admin-dashboard">
       <header className="dashboard-header">
         <h1>Tableau de Bord Administrateur</h1>
-        <div className="user-info">
-          <img src="/admin-avatar.png" alt="Admin" className="admin-avatar" />
-          <span>Admin Name</span>
-        </div>
       </header>
+
       <nav className="dashboard-nav">
-        <button 
-          className={activeTab === 'statistics' ? 'active' : ''} 
-          onClick={() => setActiveTab('statistics')}
-        >
+        <button className={activeTab === "statistics" ? "active" : ""} onClick={() => setActiveTab("statistics")}>
           Statistiques
         </button>
-        <button 
-          className={activeTab === 'concours' ? 'active' : ''} 
-          onClick={() => setActiveTab('concours')}
-        >
+        <button className={activeTab === "concours" ? "active" : ""} onClick={() => setActiveTab("concours")}>
           Gestion des Concours
         </button>
-        <button 
-          className={activeTab === 'establishments' ? 'active' : ''} 
-          onClick={() => setActiveTab('establishments')}
+        <button
+          className={activeTab === "establishments" ? "active" : ""}
+          onClick={() => setActiveTab("establishments")}
         >
           Établissements
         </button>
-        <button 
-          className={activeTab === 'resources' ? 'active' : ''} 
-          onClick={() => setActiveTab('resources')}
-        >
+        <button className={activeTab === "resources" ? "active" : ""} onClick={() => setActiveTab("resources")}>
           Ressources
         </button>
+        <button className={activeTab === "users" ? "active" : ""} onClick={() => setActiveTab("users")}>
+          Utilisateurs
+        </button>
       </nav>
-      <main className="dashboard-content">
-        {activeTab === 'statistics' && <Statistics stats={stats} />}
-        {activeTab === 'concours' && <ConcoursManager />}
-        {activeTab === 'establishments' && <EstablishmentManager />}
-        {activeTab === 'resources' && <ResourceManager />}
-      </main>
-    </div>
-  );
-};
 
-export default Dashboard;
+      <main className="dashboard-content">{renderContent()}</main>
+    </div>
+  )
+}
+
+export default AdminDashboard
 

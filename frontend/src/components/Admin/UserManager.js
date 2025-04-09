@@ -1,90 +1,257 @@
-import React, { useState, useEffect } from 'react';
-import { MoreHorizontal, Search, UserPlus } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import '../../styles/UserManager.css';
+"use client"
+
+import { useState, useEffect } from "react"
+import { fetchUsers, createUser, updateUser, deleteUser } from "../../services/api"
+import "./UserManager.css"
 
 const UserManager = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [users, setUsers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [newUser, setNewUser] = useState({ name: "", email: "", password: "", isAdmin: false })
+  const [editingUser, setEditingUser] = useState(null)
+  const [editFormData, setEditFormData] = useState({ name: "", email: "", isAdmin: false })
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    loadUsers()
+  }, [])
 
-  const fetchUsers = async () => {
+  const loadUsers = async () => {
     try {
-      const response = await fetch('/api/admin/users');
-      const data = await response.json();
-      setUsers(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      setLoading(false);
+      setLoading(true)
+      const response = await fetchUsers()
+      setUsers(response.data || response) // Handle both response formats
+      setError(null)
+    } catch (err) {
+      setError("Error loading users: " + err.message)
+      console.error("Error loading users:", err)
+    } finally {
+      setLoading(false)
     }
-  };
-
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  if (loading) {
-    return <div>Chargement des utilisateurs...</div>;
   }
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault()
+    try {
+      await createUser(newUser)
+      setNewUser({ name: "", email: "", password: "", isAdmin: false })
+      loadUsers()
+    } catch (err) {
+      setError("Error creating user: " + err.message)
+      console.error("Error creating user:", err)
+    }
+  }
+
+  const handleEditClick = (user) => {
+    setEditingUser(user._id)
+    setEditFormData({
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin || false,
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setEditingUser(null)
+    setEditFormData({ name: "", email: "", isAdmin: false })
+  }
+
+  const handleEditFormChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setEditFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }))
+  }
+
+  const handleUpdateUser = async (e) => {
+    e.preventDefault()
+    try {
+      await updateUser(editingUser, editFormData)
+      setEditingUser(null)
+      loadUsers()
+    } catch (err) {
+      setError("Error updating user: " + err.message)
+      console.error("Error updating user:", err)
+    }
+  }
+
+  const handleDeleteUser = async (id) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        await deleteUser(id)
+        loadUsers()
+      } catch (err) {
+        setError("Error deleting user: " + err.message)
+        console.error("Error deleting user:", err)
+      }
+    }
+  }
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    setNewUser((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }))
+  }
+
+  if (loading) return <div className="loading">Loading users...</div>
+  if (error) return <div className="error-message">{error}</div>
 
   return (
     <div className="user-manager">
-      <div className="user-manager-header">
-        <Input
-          type="text"
-          placeholder="Rechercher un utilisateur..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="user-search"
-          icon={<Search className="h-4 w-4" />}
-        />
-        <Button>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Ajouter un utilisateur
-        </Button>
-      </div>
-      
-      <table className="user-table">
-        <thead>
-          <tr>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Rôle</th>
-            <th>Date d'inscription</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user._id}>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
-              <td>{new Date(user.createdAt).toLocaleDateString()}</td>
-              <td>
-                <div className="user-actions">
-                  <Button variant="outline" size="sm">
-                    Éditer
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+      <h2>User Management</h2>
 
-export default UserManager;
+      <div className="create-user-form">
+        <h3>Create New User</h3>
+        <form onSubmit={handleCreateUser}>
+          <div className="form-group">
+            <label htmlFor="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={newUser.name}
+              onChange={handleInputChange}
+              placeholder="Name"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={newUser.email}
+              onChange={handleInputChange}
+              placeholder="Email"
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={newUser.password}
+              onChange={handleInputChange}
+              placeholder="Password"
+              required
+            />
+          </div>
+
+          <div className="form-group checkbox">
+            <label>
+              <input type="checkbox" name="isAdmin" checked={newUser.isAdmin} onChange={handleInputChange} />
+              Is Admin
+            </label>
+          </div>
+
+          <button type="submit" className="create-button">
+            Create User
+          </button>
+        </form>
+      </div>
+
+      <div className="users-list">
+        <h3>Liste des Utilisateurs</h3>
+        {users.length === 0 ? (
+          <p>No users found</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>NOM</th>
+                <th>EMAIL</th>
+                <th>ADMIN</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user._id}>
+                  {editingUser === user._id ? (
+                    // Edit form row
+                    <>
+                      <td colSpan="4">
+                        <form onSubmit={handleUpdateUser} className="edit-form">
+                          <div className="form-group">
+                            <label htmlFor={`edit-name-${user._id}`}>Name</label>
+                            <input
+                              type="text"
+                              id={`edit-name-${user._id}`}
+                              name="name"
+                              value={editFormData.name}
+                              onChange={handleEditFormChange}
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor={`edit-email-${user._id}`}>Email</label>
+                            <input
+                              type="email"
+                              id={`edit-email-${user._id}`}
+                              name="email"
+                              value={editFormData.email}
+                              onChange={handleEditFormChange}
+                              required
+                            />
+                          </div>
+
+                          <div className="form-group checkbox">
+                            <label>
+                              <input
+                                type="checkbox"
+                                name="isAdmin"
+                                checked={editFormData.isAdmin}
+                                onChange={handleEditFormChange}
+                              />
+                              Is Admin
+                            </label>
+                          </div>
+
+                          <div className="edit-actions">
+                            <button type="submit" className="save-button">
+                              Save
+                            </button>
+                            <button type="button" onClick={handleCancelEdit} className="cancel-button">
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
+                      </td>
+                    </>
+                  ) : (
+                    // Normal display row
+                    <>
+                      <td>{user.name}</td>
+                      <td>{user.email}</td>
+                      <td>{user.isAdmin ? "Yes" : "No"}</td>
+                      <td className="action-buttons">
+                        <button onClick={() => handleEditClick(user)} className="edit-button">
+                          Modifier
+                        </button>
+                        <button onClick={() => handleDeleteUser(user._id)} className="delete-button">
+                          Supprimer
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default UserManager
 

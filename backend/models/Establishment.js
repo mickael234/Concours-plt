@@ -1,17 +1,27 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
 const establishmentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "Le nom de l'établissement est requis"],
+      trim: true,
     },
     description: {
       type: String,
-      required: true,
+      required: [true, "La description de l'établissement est requise"],
     },
     logo: {
       type: String,
+      default: null,
+    },
+    website: {
+      type: String,
+    },
+    country: {
+      type: String,
+      required: [true, "Le pays est requis"],
+      trim: true,
     },
     contact: {
       address: String,
@@ -20,21 +30,28 @@ const establishmentSchema = new mongoose.Schema(
     },
     socialMedia: [
       {
-        platform: String,
-        url: String,
+        platform: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
+    concours: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Concours",
       },
     ],
     ratings: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'User',
-        },
-        network: {
-          type: Number,
+          ref: "User",
           required: true,
-          min: 1,
-          max: 5,
         },
         teaching: {
           type: Number,
@@ -48,13 +65,18 @@ const establishmentSchema = new mongoose.Schema(
           min: 1,
           max: 5,
         },
-        comment: String,
+        network: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5,
+        },
       },
     ],
     averageRatings: {
-      network: { type: Number, default: 0 },
       teaching: { type: Number, default: 0 },
       employability: { type: Number, default: 0 },
+      network: { type: Number, default: 0 },
     },
     numRatings: {
       type: Number,
@@ -63,10 +85,10 @@ const establishmentSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
-);
+  },
+)
 
-const Establishment = mongoose.model('Establishment', establishmentSchema);
+const Establishment = mongoose.models.Establishment || mongoose.model("Establishment", establishmentSchema)
 
-export default Establishment;
+export default Establishment
 

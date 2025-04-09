@@ -1,0 +1,41 @@
+/* Update the button colors from green to blue */
+.add-button,
+button[type="button"].add-button {
+  background-color: #3b82f6 !important; /* Blue */
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.add-button:hover,
+button[type="button"].add-button:hover {
+  background-color: #2563eb !important; /* Darker blue */
+}
+
+/* Update the submit button color */
+.submit-button,
+button[type="submit"].submit-button {
+  background-color: #3b82f6 !important; /* Blue */
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border: none;
+}
+
+.submit-button:hover,
+button[type="submit"].submit-button:hover {
+  background-color: #2563eb !important; /* Darker blue */
+}
+
+.resource-card.selected {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+

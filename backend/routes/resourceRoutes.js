@@ -1,4 +1,4 @@
-import express from 'express';
+import express from "express"
 import {
   getResources,
   getResourceById,
@@ -6,18 +6,20 @@ import {
   updateResource,
   deleteResource,
   incrementDownload,
-} from '../controllers/resourceController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+  rateResource,
+  getAllResources, // Assurez-vous que cette fonction est bien importée
+} from "../controllers/resourceController.js"
+import { protect, admin } from "../middleware/authMiddleware.js"
 
-const router = express.Router();
+const router = express.Router()
 
-router.route('/').get(getResources).post(protect, admin, createResource);
-router
-  .route('/:id')
-  .get(getResourceById)
-  .put(protect, admin, updateResource)
-  .delete(protect, admin, deleteResource);
-router.route('/:id/download').put(incrementDownload);
+// Important: Placez la route /all AVANT les routes avec des paramètres
+router.route("/all").get(getAllResources)
 
-export default router;
+router.route("/").get(getResources).post(protect, createResource)
+router.route("/:id").get(getResourceById).put(protect, updateResource).delete(protect, admin, deleteResource)
+router.route("/:id/download").post(incrementDownload)
+router.route("/:id/rate").post(protect, rateResource)
+
+export default router
 

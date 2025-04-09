@@ -63,7 +63,7 @@ const StructureSearch = () => {
         
         {structures.length === 0 ? (
           <div className="no-results">
-            <p>Nous préparons l'arrivée des structures de préparation aux concours sur Concours Hub.</p>
+            <p>Nous préparons l'arrivée des structures de préparation aux concours sur Concours CI.</p>
           </div>
         ) : (
           <div className="structures-list">

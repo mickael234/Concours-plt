@@ -1,61 +1,79 @@
-import React from "react"
-import { BookOpen, Building2, GraduationCap } from "lucide-react"
+"use client"
 
-const StatCard = ({ title, value, description, icon: Icon }) => (
-  <div className="stat-card">
-    <div className="stat-card-header">
-      <h3 className="stat-card-title">{title}</h3>
-      <Icon className="stat-card-icon" />
-    </div>
-    <div className="stat-card-value">{value}</div>
-    <p className="stat-card-description">{description}</p>
-  </div>
-)
+import { useEffect } from "react"
+import "./Statistics.css"
+import { BarChart3, Users, Building2, Eye, Award } from "lucide-react"
 
-export default function Statistics({ stats, loading, error }) {
-  const defaultStats = [
-    {
-      title: "Total des Concours",
-      value: "0",
-      description: "Concours actifs et archivés",
-      icon: GraduationCap,
-    },
-    {
-      title: "Ressources",
-      value: "0",
-      description: "Documents et matériels de préparation",
-      icon: BookOpen,
-    },
-    {
-      title: "Établissements",
-      value: "0",
-      description: "Centres et écoles partenaires",
-      icon: Building2,
-    },
-  ]
+const Statistics = ({ stats, loading, error }) => {
+  console.log("Statistics component rendering with stats:", stats)
 
-  if (loading) {
-    return <div>Chargement des statistiques...</div>
-  }
+  useEffect(() => {
+    // Add animation class after component mounts
+    const cards = document.querySelectorAll(".stat-card1")
+    setTimeout(() => {
+      cards.forEach((card, index) => {
+        setTimeout(() => {
+          card.classList.add("animate-in")
+        }, index * 100)
+      })
+    }, 100)
+  }, [stats])
 
-  if (error) {
-    return <div>Erreur lors du chargement des statistiques: {error}</div>
-  }
+  if (loading)
+    return (
+      <div className="statistics-loading">
+        <div className="spinner"></div>
+        <p>Chargement des statistiques...</p>
+      </div>
+    )
 
-  const displayStats = stats
-    ? [
-        { ...defaultStats[0], value: stats.concours.toString() },
-        { ...defaultStats[1], value: stats.resources.toString() },
-        { ...defaultStats[2], value: stats.establishments.toString() },
-      ]
-    : defaultStats
+  if (error)
+    return (
+      <div className="statistics-error">
+        <p>Erreur : {error}</p>
+      </div>
+    )
+
+  if (!stats)
+    return (
+      <div className="statistics-empty">
+        <p>Aucune donnée statistique disponible.</p>
+      </div>
+    )
 
   return (
-    <div className="stats-grid">
-      {displayStats.map((stat) => (
-        <StatCard key={stat.title} {...stat} />
-      ))}
+    <div className="statistics-container">
+      <h2 className="statistics-title">Tableau de bord</h2>
+      <div className="statistics-grid">
+        <div className="stat-card1">
+          <Award size={24} className="stat-icon" />
+          <h3>Total des concours</h3>
+          <p>{stats.totalConcours || 0}</p>
+        </div>
+        <div className="stat-card1">
+          <Users size={24} className="stat-icon" />
+          <h3>Total des utilisateurs</h3>
+          <p>{stats.totalUsers || 0}</p>
+        </div>
+        <div className="stat-card1">
+          <Building2 size={24} className="stat-icon" />
+          <h3>Total des établissements</h3>
+          <p>{stats.totalEstablishments || 0}</p>
+        </div>
+        <div className="stat-card1">
+          <Eye size={24} className="stat-icon" />
+          <h3>Visites du site</h3>
+          <p>{stats.totalSiteVisits || 0}</p>
+        </div>
+        <div className="stat-card1">
+          <BarChart3 size={24} className="stat-icon" />
+          <h3>Vues totales des concours</h3>
+          <p>{stats.totalConcoursViews || 0}</p>
+        </div>
+      </div>
     </div>
   )
 }
+
+export default Statistics
 

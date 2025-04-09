@@ -1,0 +1,123 @@
+.user-sidebar {
+    width: 280px;
+    height: 100%;
+    background-color: #fff;
+    border-right: 1px solid #eaeaea;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  
+  .user-profile {
+    padding: 20px;
+    border-bottom: 1px solid #eaeaea;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a6cf7;
+  }
+  
+  .user-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .user-info p {
+    margin: 5px 0 0;
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .sidebar-nav {
+    flex: 1;
+    padding: 20px 0;
+  }
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #555;
+    text-decoration: none;
+    transition: background-color 0.3s, color 0.3s;
+    border-left: 3px solid transparent;
+  }
+  
+  .nav-item:hover {
+    background-color: #f5f5f5;
+    color: #4a6cf7;
+  }
+  
+  .nav-item.active {
+    background-color: #f0f7ff;
+    color: #4a6cf7;
+    border-left-color: #4a6cf7;
+  }
+  
+  .nav-item span {
+    margin-left: 15px;
+    font-size: 0.95rem;
+  }
+  
+  .sidebar-footer {
+    padding: 20px 0;
+    border-top: 1px solid #eaeaea;
+  }
+  
+  .logout-btn {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  
+  .logout-btn:hover {
+    color: #e53935;
+  }
+  
+  @media (max-width: 768px) {
+    .user-sidebar {
+      width: 100%;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid #eaeaea;
+    }
+  
+    .user-profile {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .sidebar-nav {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10px;
+    }
+  
+    .nav-item {
+      flex: 1 0 50%;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+    }
+  
+    .nav-item.active {
+      border-left-color: transparent;
+      border-bottom-color: #4a6cf7;
+    }
+  }
+  
+  

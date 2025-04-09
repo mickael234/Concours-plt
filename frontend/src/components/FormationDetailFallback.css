@@ -1,0 +1,19 @@
+.error-notice {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #fff8f8;
+    border-left: 4px solid #ffcccc;
+    border-radius: 4px;
+  }
+  
+  .error-notice p {
+    margin: 5px 0;
+    color: #d32f2f;
+  }
+  
+  .error-notice p:first-child {
+    font-weight: bold;
+  }
+  
+
+  

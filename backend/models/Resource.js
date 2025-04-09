@@ -1,46 +1,88 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
 const resourceSchema = new mongoose.Schema(
   {
     title: {
       type: String,
       required: true,
+      trim: true,
     },
     type: {
       type: String,
-      enum: ['past_paper', 'course'],
-      required: true,
+      enum: ["course", "past_paper", "document", "other"],
+      default: "document",
     },
     description: {
       type: String,
-      required: true,
+      trim: true,
     },
     fileUrl: {
       type: String,
-      required: true,
+    },
+    imageUrl: {
+      type: String,
     },
     subject: {
       type: String,
-      required: true,
+      trim: true,
     },
     year: {
-      type: Number,
+      type: String,
     },
-    concours: {
+    price: {
+      type: Number,
+      default: 0,
+    },
+    source: {
+      type: String,
+      default: "ORG CI",
+    },
+    concoursId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Concours',
+      ref: "Concours",
+    },
+    ratings: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        rating: {
+          type: Number,
+          required: true,
+          min: 1,
+          max: 5,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    numRatings: {
+      type: Number,
+      default: 0,
     },
     downloads: {
+      type: Number,
+      default: 0,
+    },
+    views: {
       type: Number,
       default: 0,
     },
   },
   {
     timestamps: true,
-  }
-);
+  },
+)
 
-const Resource = mongoose.model('Resource', resourceSchema);
+const Resource = mongoose.model("Resource", resourceSchema)
 
-export default Resource;
+export default Resource
 

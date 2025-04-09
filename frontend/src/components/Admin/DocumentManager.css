@@ -1,0 +1,305 @@
+.document-manager {
+    width: 100%;
+    padding: 20px;
+  }
+  
+  .manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .manager-header h2 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  .add-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+  
+  .add-button:hover {
+    background-color: #45a049;
+  }
+  
+  .manager-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 8px 12px;
+    width: 300px;
+  }
+  
+  .search-bar input {
+    border: none;
+    background: transparent;
+    margin-left: 8px;
+    flex-grow: 1;
+    outline: none;
+  }
+  
+  .sort-options {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sort-options span {
+    font-weight: 500;
+  }
+  
+  .sort-options button {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .sort-options button:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .sort-options button.active {
+    background-color: #e0e0e0;
+    border-color: #bbb;
+  }
+  
+  .documents-list {
+    overflow-x: auto;
+  }
+  
+  .documents-table {
+    width: 100%;
+    border-collapse: collapse;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .documents-table th,
+  .documents-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .documents-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+  }
+  
+  .documents-table tr:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .actions-cell {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .view-btn {
+    background-color: #2196f3;
+    color: white;
+  }
+  
+  .view-btn:hover {
+    background-color: #0b7dda;
+  }
+  
+  .edit-btn {
+    background-color: #ff9800;
+    color: white;
+  }
+  
+  .edit-btn:hover {
+    background-color: #e68a00;
+  }
+  
+  .delete-btn11 {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .delete-btn11:hover {
+    background-color: #da190b;
+  }
+  
+  .download-btn {
+    background-color: #4caf50;
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .download-btn:hover {
+    background-color: #45a049;
+  }
+  
+  .loading-state,
+  .error-state,
+  .empty-state {
+    padding: 40px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    margin-top: 20px;
+  }
+  
+  .error-state {
+    color: #f44336;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 24px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+  
+  .document-details {
+    margin-bottom: 20px;
+  }
+  
+  .detail-row {
+    margin-bottom: 12px;
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .detail-label {
+    font-weight: 600;
+    width: 150px;
+    margin-right: 10px;
+  }
+  
+  .detail-value {
+    flex: 1;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .btn-download {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-download:hover {
+    background-color: #45a049;
+  }
+  
+  .btn-close {
+    padding: 8px 16px;
+    background-color: #e0e0e0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn-close:hover {
+    background-color: #d0d0d0;
+  }
+  
+  @media (max-width: 768px) {
+    .manager-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .search-bar {
+      width: 100%;
+    }
+  
+    .sort-options {
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+  
+    .documents-table th,
+    .documents-table td {
+      padding: 8px;
+    }
+  
+    .detail-label {
+      width: 100%;
+      margin-bottom: 4px;
+    }
+  
+    .detail-value {
+      width: 100%;
+    }
+  }
+  
+  

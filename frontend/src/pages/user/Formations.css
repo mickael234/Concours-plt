@@ -1,0 +1,372 @@
+.formations-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .formations-page {
+    padding: 20px;
+  }
+  
+  .formations-page h1 {
+    margin-bottom: 20px;
+  }
+  
+  .formations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .formations-header h1 {
+    font-size: 28px;
+    color: #333;
+  }
+  
+  .formations-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f9fafb;
+    border-radius: 6px;
+    padding: 8px 16px;
+    width: 300px;
+  }
+  
+  .search-bar svg {
+    color: #6b7280;
+    margin-right: 10px;
+  }
+  
+  .search-bar input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+  }
+  
+  .filter-dropdown select {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+  }
+  
+  .no-formations {
+    text-align: center;
+    padding: 40px;
+    background-color: #f9fafb;
+    border-radius: 8px;
+    color: #666;
+  }
+  
+  .no-formations svg {
+    color: #9ca3af;
+    margin-bottom: 20px;
+  }
+  
+  .formations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .formation-card {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .formation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .formation-card.upcoming {
+    border-top: 4px solid #4f46e5;
+  }
+  
+  .formation-card.ongoing {
+    border-top: 4px solid #059669;
+  }
+  
+  .formation-card.completed {
+    border-top: 4px solid #6b7280;
+  }
+  
+  .formation-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .formation-card.upcoming .formation-status {
+    background-color: #f0f4ff;
+    color: #4f46e5;
+  }
+  
+  .formation-card.ongoing .formation-status {
+    background-color: #ecfdf5;
+    color: #059669;
+  }
+  
+  .formation-card.completed .formation-status {
+    background-color: #f3f4f6;
+    color: #6b7280;
+  }
+  
+  .formation-icon {
+    background-color: #f0f4ff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: #4f46e5;
+  }
+  
+  .formation-info h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .formation-business {
+    font-size: 14px;
+    color: #6b7280;
+    margin-bottom: 15px;
+  }
+  
+  .formation-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .loading-state,
+  .error-state {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+  
+  .error-state {
+    color: #b91c1c;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 700px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .formation-detail-modal {
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .modal-header h2 {
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .close-modal-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .formation-detail-body {
+    overflow-y: auto;
+    max-height: 60vh;
+  }
+  
+  .formation-detail-status {
+    margin-bottom: 20px;
+  }
+  
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  
+  .status-badge.upcoming {
+    background-color: #f0f4ff;
+    color: #4f46e5;
+  }
+  
+  .status-badge.ongoing {
+    background-color: #ecfdf5;
+    color: #059669;
+  }
+  
+  .status-badge.completed {
+    background-color: #f3f4f6;
+    color: #6b7280;
+  }
+  
+  .formation-detail-section {
+    margin-bottom: 30px;
+  }
+  
+  .formation-detail-section h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+  }
+  
+  .detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .detail-item svg {
+    color: #4f46e5;
+    margin-top: 3px;
+  }
+  
+  .detail-item h4 {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 5px 0;
+  }
+  
+  .detail-item p {
+    font-size: 16px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .formation-description,
+  .formation-program {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .cancel-btn,
+  .cancel-registration-btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .cancel-btn {
+    background-color: #f3f4f6;
+    color: #333;
+    border: 1px solid #d1d5db;
+  }
+  
+  .cancel-btn:hover {
+    background-color: #e5e7eb;
+  }
+  
+  .cancel-registration-btn {
+    background-color: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #b91c1c;
+  }
+  
+  .cancel-registration-btn:hover {
+    background-color: #fee2e2;
+  }
+  
+  @media (max-width: 768px) {
+    .formations-toolbar {
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .search-bar {
+      width: 100%;
+    }
+  
+    .formations-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  

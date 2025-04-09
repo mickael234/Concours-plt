@@ -13,9 +13,9 @@ const Footer = () => {
       
       <div className="footer-content">
         <div className="footer-section">
-          <h2>Concours Hub</h2>
+          <h2>Concours CI</h2>
           <p className="footer-description">
-            Concours Hub est né d'une conviction forte : la réussite repose avant tout sur des choix 
+            Concours CI est né d'une conviction forte : la réussite repose avant tout sur des choix 
             d'orientation éclairés. Nous offrons une plateforme collaborative où chaque utilisateur 
             peut enrichir notre base de données en ajoutant écoles, universités et concours, et en 
             partageant ses avis. Ensemble, aidons la communauté à construire un parcours 
@@ -51,7 +51,7 @@ const Footer = () => {
       </div>
 
       <div className="footer-bottom">
-        <p>&copy; 2024 Concours Hub. Tous droits réservés</p>
+        <p>&copy; 2025 Concours CI. Tous droits réservés</p>
       </div>
     </footer>
   );

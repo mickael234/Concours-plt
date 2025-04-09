@@ -1,0 +1,41 @@
+.establishment-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .establishment-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  
+  
+  .rating-stars {
+    display: inline-flex;
+  }
+  
+  .star {
+    color: #e0e0e0;
+    font-size: 18px;
+  }
+  
+  .star.filled {
+    color: #ffd700;
+  }
+  
+  .rating-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  
+  .review-count {
+    margin-top: 12px;
+    font-style: italic;
+    color: #666;
+  }
+  
+  

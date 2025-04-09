@@ -1,0 +1,199 @@
+.inscriptions-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.inscriptions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.inscriptions-header h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #333;
+}
+
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.export-btn:hover {
+  background-color: #45a049;
+}
+
+.inscriptions-stats {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  width: 23%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.stat-card h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.stat-card p {
+  margin: 10px 0 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.inscriptions-filters {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.search-box {
+  position: relative;
+  width: 300px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.filter-box {
+  position: relative;
+  width: 250px;
+}
+
+.filter-box select {
+  width: 100%;
+  padding: 10px 15px 10px 40px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  appearance: none;
+  background-color: white;
+}
+
+.filter-box svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+}
+
+.inscriptions-table-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.inscriptions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.inscriptions-table th {
+  background-color: #f9f9f9;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  position: relative;
+}
+
+.inscriptions-table th.sorted-asc,
+.inscriptions-table th.sorted-desc {
+  background-color: #f0f0f0;
+}
+
+.sort-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.inscriptions-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.inscrit-name {
+  display: flex;
+  flex-direction: column;
+}
+
+.inscrit-name .nom {
+  font-weight: 500;
+}
+
+.inscrit-name .prenom {
+  color: #666;
+}
+
+.inscrit-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inscrit-contact .email {
+  color: #1976d2;
+}
+
+.inscrit-contact .phone {
+  color: #666;
+}
+
+.formation-link {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.formation-link:hover {
+  text-decoration: underline;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+

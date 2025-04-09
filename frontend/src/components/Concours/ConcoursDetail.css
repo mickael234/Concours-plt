@@ -1,0 +1,155 @@
+.concours-detail {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .detail-header {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .detail-header h1 {
+    color: #006d77;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .organizer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .organizer img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+  }
+  
+  .detail-section {
+    margin-bottom: 3rem;
+  }
+  
+  .section-title {
+    background-color: #e8faf8;
+    color: #006d77;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+  }
+  
+  .section-content {
+    padding: 0 1rem;
+  }
+  
+  .session-info {
+    background-color: #fff;
+    border: 1px solid #e8faf8;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .session-info p {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+  }
+  
+  .conditions-list,
+  .documents-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .conditions-list li,
+  .documents-list li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .conditions-list li:before,
+  .documents-list li:before {
+    content: "•";
+    color: #006d77;
+    position: absolute;
+    left: 0;
+  }
+  
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  
+  .timeline:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #e8faf8;
+  }
+  
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+  }
+  
+  .timeline-marker {
+    position: absolute;
+    left: -2.4rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background-color: #006d77;
+    border: 2px solid #fff;
+  }
+  
+  .timeline-content {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .timeline-content h3 {
+    color: #006d77;
+    margin-bottom: 0.5rem;
+  }
+  
+  .timeline-date {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .document-card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .document-card h3 {
+    color: #006d77;
+    margin-bottom: 1rem;
+  }
+  
+  .document-card .price {
+    color: #006d77;
+    font-weight: 600;
+    margin-top: 1rem;
+  }
+  
+  

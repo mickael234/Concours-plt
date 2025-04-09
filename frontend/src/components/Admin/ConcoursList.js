@@ -1,44 +1,69 @@
-import React from "react"
+"use client"
 
-const ConcoursList = ({ concours, onEdit, onDelete }) => {
+import { Button } from "../ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table"
+
+const ConcoursList = ({ concours, onEditClick, onDeleteClick }) => {
+  const getStatusBadge = (status) => {
+    const statusClasses = {
+      a_venir: "bg-blue-100 text-blue-800",
+      en_cours: "bg-green-100 text-green-800",
+      termine: "bg-red-100 text-red-800",
+    }
+    const statusText = {
+      a_venir: "À venir",
+      en_cours: "En cours",
+      termine: "Terminé",
+    }
+    return (
+      <span
+        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClasses[status] || "bg-gray-100 text-gray-800"}`}
+      >
+        {statusText[status] || "Inconnu"}
+      </span>
+    )
+  }
+
   return (
-    <div>
-      <h2 className="admin-title">Liste des Concours</h2>
-      {concours.length > 0 ? (
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Titre</th>
-              <th>Organisation</th>
-              <th>Année</th>
-              <th>Période d'inscription</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold text-gray-800">Liste des Concours</h2>
+      {concours && concours.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Titre</TableHead>
+              <TableHead>Organisation</TableHead>
+              <TableHead>Année</TableHead>
+              <TableHead>Période d'inscription</TableHead>
+              <TableHead>Statut</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {concours.map((c) => (
-              <tr key={c._id}>
-                <td>{c.title}</td>
-                <td>{c.organization}</td>
-                <td>{c.year}</td>
-                <td>
+              <TableRow key={c._id}>
+                <TableCell className="font-medium">{c.title}</TableCell>
+                <TableCell>{c.organizerName}</TableCell>
+                <TableCell>{new Date(c.dateStart).getFullYear()}</TableCell>
+                <TableCell>
                   {new Date(c.dateStart).toLocaleDateString("fr-FR")} au{" "}
                   {new Date(c.dateEnd).toLocaleDateString("fr-FR")}
-                </td>
-                <td className="action-buttons">
-                  <button onClick={() => onEdit(c)} className="button button-primary">
+                </TableCell>
+                <TableCell>{getStatusBadge(c.status)}</TableCell>
+                <TableCell>
+                  <Button onClick={() => onEditClick(c)} className="mr-2" variant="outline">
                     Modifier
-                  </button>
-                  <button onClick={() => onDelete(c._id)} className="button button-danger">
+                  </Button>
+                  <Button onClick={() => onDeleteClick(c._id)} variant="destructive">
                     Supprimer
-                  </button>
-                </td>
-              </tr>
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       ) : (
-        <p>Aucun concours disponible.</p>
+        <p className="text-gray-600 italic">Aucun concours disponible.</p>
       )}
     </div>
   )

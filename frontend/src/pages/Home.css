@@ -1,39 +1,47 @@
 .home-page {
-    font-family: 'Arial', sans-serif;
-    color: #333;
-  }
-  
+  font-family: "Arial", sans-serif;
+  color: #333;
+}
+
+main {
+  max-width: 1400px; /* Augmenté de 1200px à 1400px */
+  margin: 0 auto;
+  padding: 2rem;
+  width: 100%; /* Ajouté pour s'assurer que le contenu occupe 90% de la largeur de l'écran */
+}
+
+.featured-concours,
+.preparation {
+  margin-bottom: 4rem;
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #2c3e50;
+}
+
+.concours-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 2fr)); /* Augmenté de 300px à 320px */
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
   main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem;
+    width: 95%; /* Ajusté pour les écrans plus petits */
   }
-  
-  .featured-concours,
-  .preparation {
-    margin-bottom: 4rem;
-  }
-  
-  h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #2c3e50;
-  }
-  
+
   .concours-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
+    grid-template-columns: 1fr;
   }
-  
-  @media (max-width: 768px) {
-    main {
-      padding: 1rem;
-    }
-  
-    .concours-grid {
-      grid-template-columns: 1fr;
-    }
+}
+
+/* Ajout d'une media query pour les très grands écrans */
+@media (min-width: 1600px) {
+  main {
+    max-width: 1600px; /* Encore plus large pour les très grands écrans */
   }
-  
-  
+}
+

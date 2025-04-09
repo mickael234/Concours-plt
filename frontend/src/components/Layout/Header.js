@@ -1,21 +1,35 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import './Header.css';
+"use client"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../../contexts/AuthContext"
+import "./Header.css"
 
 const Header = () => {
-  const navigate = useNavigate();
-  const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
 
   const handleLogout = () => {
-    localStorage.removeItem('userInfo');
-    navigate('/');
-  };
+    logout()
+    navigate("/login")
+  }
+
+  const handleSiteChange = (e) => {
+    const site = e.target.value
+    if (site === "business") {
+      navigate("/business")
+    } else {
+      navigate("/")
+    }
+  }
+
+  const isAdmin = user?.role === "admin"
+  const isBusiness = user?.role === "business"
+  const isSuperAdmin = user?.role === "superadmin"
 
   return (
     <header className="header">
       <div className="header-content">
         <div className="logo">
-          <Link to="/">Concours Hub</Link>
+          <Link to="/">Concours CI</Link>
         </div>
         <div className="header-right">
           <Link to="/boutique" className="boutique-link">
@@ -24,30 +38,57 @@ const Header = () => {
           </Link>
           <div className="site-type">
             <span>Changer de site : </span>
-            <select className="site-select">
-              <option>Particuliers</option>
-              <option>Professionnels</option>
+            <select
+              className="site-select"
+              onChange={handleSiteChange}
+              value={window.location.pathname.startsWith("/business") ? "business" : "particuliers"}
+            >
+              <option value="particuliers">Particuliers</option>
+              <option value="business">Business</option>
             </select>
           </div>
-          {userInfo ? (
+          {user ? (
             <>
-              <span className="user-name">Bonjour, {userInfo.name}</span>
-              {userInfo.role === 'admin' && (
-                <Link to="/admin" className="btn-admin">Tableau de bord Admin</Link>
+              <span className="user-name">Bonjour, {user.name || user.firstName}</span>
+              {isSuperAdmin && (
+                <Link to="/admin" className="btn-admin btn-superadmin">
+                  Tableau de bord SuperAdmin
+                </Link>
               )}
-              <button onClick={handleLogout} className="btn-logout">Se déconnecter</button>
+              {isAdmin && !isSuperAdmin && (
+                <Link to="/admin" className="btn-admin">
+                  Tableau de bord Admin
+                </Link>
+              )}
+              {isBusiness && (
+                <Link to="/business/dashboard" className="btn-business">
+                  Tableau de bord Business
+                </Link>
+              )}
+              {!isSuperAdmin && !isAdmin && !isBusiness && user && (
+                <Link to="/user/dashboard" className="btn-user-dashboard">
+                  Mon Espace
+                </Link>
+              )}
+              <button onClick={handleLogout} className="btn-logout">
+                Se déconnecter
+              </button>
             </>
           ) : (
             <div className="auth-buttons">
-              <Link to="/login" className="btn-connect">Se connecter</Link>
-              <Link to="/register" className="btn-register">S'inscrire</Link>
+              <Link to="/login" className="btn-connect">
+                Se connecter
+              </Link>
+              <Link to="/register" className="btn-register">
+                S'inscrire
+              </Link>
             </div>
           )}
         </div>
       </div>
     </header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header
 

@@ -1,0 +1,18 @@
+/* Fix for select options visibility */
+select option {
+    color: black !important;
+    background-color: white !important;
+  }
+  
+  .concours-select {
+    color: black !important;
+    background-color: white !important;
+  }
+  
+  /* Make sure the text in the select is visible */
+  select {
+    color: black !important;
+    background-color: white !important;
+  }
+  
+  
