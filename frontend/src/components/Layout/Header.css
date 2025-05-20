@@ -1,87 +1,411 @@
 .header {
-    background-color: #b5e6d8;
-    padding: 1rem 2rem;
-    width: 100%;
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-dark, var(--primary) / 0.8)));
+  padding: 1rem 2rem;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo a {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 800;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo a::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: hsl(var(--accent));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.logo a:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.boutique-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.boutique-link:hover {
+  color: hsla(var(--accent), 0.9);
+  transform: translateY(-2px);
+}
+
+.site-type {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: white;
+  font-weight: 500;
+}
+
+.site-select {
+  padding: 0.5rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+.site-select:focus {
+  outline: none;
+  border-color: hsl(var(--accent));
+  box-shadow: 0 0 0 3px hsla(var(--accent), 0.3);
+}
+
+.site-select:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.site-select option {
+  background-color: hsl(var(--primary));
+  color: white;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+/* Styles de base pour tous les boutons */
+.btn-connect,
+.btn-register,
+.btn-logout,
+.btn-admin,
+.btn-business,
+.btn-user-dashboard,
+.btn-superadmin {
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Effet de brillance au survol pour tous les boutons */
+.btn-connect::after,
+.btn-register::after,
+.btn-logout::after,
+.btn-admin::after,
+.btn-business::after,
+.btn-user-dashboard::after,
+.btn-superadmin::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.5s;
+  z-index: -1;
+}
+
+.btn-connect:hover::after,
+.btn-register:hover::after,
+.btn-logout:hover::after,
+.btn-admin:hover::after,
+.btn-business:hover::after,
+.btn-user-dashboard:hover::after,
+.btn-superadmin:hover::after {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Style spécifique pour le bouton de connexion */
+.btn-connect {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.btn-connect:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+/* Style spécifique pour le bouton d'inscription */
+.btn-register {
+  background-color: hsl(var(--accent));
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px hsla(var(--accent), 0.3);
+}
+
+.btn-register:hover {
+  background-color: hsl(var(--accent) / 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px hsla(var(--accent), 0.4);
+}
+
+/* Style pour le bouton de déconnexion */
+.btn-logout {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-logout:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-logout::before {
+  content: "👋";
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Style pour le bouton SuperAdmin */
+.btn-superadmin {
+  background: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary) / 0.8));
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px hsla(var(--secondary), 0.3);
+  position: relative;
+}
+
+.btn-superadmin:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px hsla(var(--secondary), 0.4);
+}
+
+.btn-superadmin::before {
+  content: "👑";
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Style pour le bouton Tableau de bord */
+.btn-admin, 
+.btn-user-dashboard {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.6));
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-admin:hover,
+.btn-user-dashboard:hover {
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.9), hsl(var(--primary) / 0.7));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-admin::before,
+.btn-user-dashboard::before {
+  content: "📊";
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Style pour le bouton Business */
+.btn-business {
+  background: linear-gradient(135deg, hsl(var(--info)), hsl(var(--info) / 0.8));
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px hsla(var(--info), 0.3);
+}
+
+.btn-business:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px hsla(var(--info), 0.4);
+}
+
+.btn-business::before {
+  content: "💼";
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Style pour l'affichage du nom d'utilisateur */
+.user-greeting {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-greeting::before {
+  content: "👋";
+  font-size: 1.2rem;
+  margin-right: 0.25rem;
+}
+
+.user-greeting::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--accent)), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
   }
-  
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Styles responsifs */
+@media (max-width: 992px) {
   .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
+    flex-direction: column;
+    padding: 1rem 0;
   }
-  
-  .logo a {
-    color: #006d77;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-decoration: none;
+
+  .logo {
+    margin-bottom: 1rem;
   }
-  
+
   .header-right {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-  
-  .boutique-link {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: #333;
-  }
-  
-  .site-type {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .site-select {
-    padding: 0.25rem 0.5rem;
-    border: 1px solid #006d77;
-    border-radius: 4px;
-    background: transparent;
-  }
-  
-  .auth-buttons {
-    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    flex-wrap: wrap;
     gap: 1rem;
   }
-  
-  .btn-connect, .btn-register {
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+  }
+
+  .header-right {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .site-type {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+  }
+
+  .auth-buttons {
+    width: 100%;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .btn-connect,
+  .btn-register,
+  .btn-logout,
+  .btn-admin,
+  .btn-business,
+  .btn-user-dashboard,
+  .btn-superadmin {
     padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    text-decoration: none;
+    font-size: 0.9rem;
   }
-  
-  .btn-connect {
-    background-color: transparent;
-    border: 1px solid #000;
-    color: #000;
-  }
-  
-  .btn-register {
-    background-color: #000;
-    color: white;
-    border: none;
+}
+
+@media (max-width: 480px) {
+  .boutique-link,
+  .site-type {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.75rem;
   }
 
-  .btn-logout{
-    background-color: #000;
-    color: white;
-    border: none;
-
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+    align-items: stretch;
   }
 
-  .btn-admin{
-    background-color: transparent;
-    border: 1px solid #000;
-    color: #000;
+  .btn-connect,
+  .btn-register,
+  .btn-logout,
+  .btn-admin,
+  .btn-business,
+  .btn-user-dashboard,
+  .btn-superadmin {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
   }
-  
-  
+
+  .user-greeting {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

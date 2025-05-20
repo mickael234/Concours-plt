@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getDocuments, deleteDocument } from "../../services/api"
-import { Download, Edit, Trash, Eye, Search } from "lucide-react"
+import {  Trash, Eye, Search } from "lucide-react"
 import DocumentForm from "./DocumentForm"
 import "./DocumentManager.css"
 
@@ -179,20 +179,11 @@ const DocumentManager = () => {
                     <button className="action-btn view-btn" onClick={() => handleView(document)}>
                       <Eye size={18} />
                     </button>
-                    <button className="action-btn edit-btn">
-                      <Edit size={18} />
-                    </button>
+                    
                     <button className="action-btn delete-btn11" onClick={() => handleDelete(document._id)}>
                       <Trash size={18} />
                     </button>
-                    <a
-                      href={document.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="action-btn download-btn"
-                    >
-                      <Download size={18} />
-                    </a>
+                   
                   </td>
                 </tr>
               ))}
@@ -235,10 +226,7 @@ const DocumentManager = () => {
               </div>
             </div>
             <div className="modal-actions">
-              <a href={selectedDocument.url} target="_blank" rel="noopener noreferrer" className="btn-download">
-                <Download size={18} />
-                Télécharger
-              </a>
+             
               <button className="btn-close" onClick={() => setShowModal(false)}>
                 Fermer
               </button>

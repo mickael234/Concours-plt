@@ -24,11 +24,15 @@ const EstablishmentDetail = () => {
   useEffect(() => {
     const fetchEstablishment = async () => {
       try {
+        setLoading(true)
         const response = await getEstablishmentById(id)
 
-        // S'assurer que averageRatings existe
-        if (!response.data.averageRatings) {
-          response.data.averageRatings = {
+        // Normaliser la réponse pour s'assurer que toutes les propriétés existent
+        const establishmentData = response.data || response
+
+        // Initialiser les valeurs par défaut si elles n'existent pas
+        if (!establishmentData.averageRatings) {
+          establishmentData.averageRatings = {
             teaching: 0,
             employability: 0,
             network: 0,
@@ -36,16 +40,37 @@ const EstablishmentDetail = () => {
           }
         }
 
-        setEstablishment(response.data)
-        setLoading(false)
+        // Calculer la note globale si elle n'existe pas
+        if (establishmentData.averageRatings && !establishmentData.averageRatings.overall) {
+          const { teaching, employability, network } = establishmentData.averageRatings
+          const values = [teaching || 0, employability || 0, network || 0].filter((v) => v > 0)
+          establishmentData.averageRatings.overall =
+            values.length > 0 ? values.reduce((sum, val) => sum + val, 0) / values.length : 0
+        }
+
+        // S'assurer que ratings existe
+        if (!establishmentData.ratings) {
+          establishmentData.ratings = []
+        }
+
+        // S'assurer que numRatings existe
+        if (establishmentData.numRatings === undefined) {
+          establishmentData.numRatings = establishmentData.ratings.length || 0
+        }
+
+        setEstablishment(establishmentData)
+        setError(null)
       } catch (err) {
         console.error("Erreur:", err)
         setError("Erreur lors du chargement des informations de l'établissement")
+      } finally {
         setLoading(false)
       }
     }
 
-    fetchEstablishment()
+    if (id) {
+      fetchEstablishment()
+    }
   }, [id])
 
   const handleRating = (category, value) => {
@@ -65,14 +90,57 @@ const EstablishmentDetail = () => {
       const token = getToken()
       const response = await rateEstablishment(id, ratings, token)
 
-      // Update the establishment data with new ratings
-      setEstablishment((prev) => ({
-        ...prev,
-        averageRatings: response.data.averageRatings,
-        numRatings: response.data.numRatings,
-      }))
+      // Extraire les données de la réponse
+      const responseData = response.data || response
 
-      // Reset the form
+      // Mettre à jour l'établissement avec les nouvelles évaluations
+      setEstablishment((prev) => {
+        if (!prev) return null
+
+        // Créer une copie profonde pour éviter les mutations
+        const updatedEstablishment = JSON.parse(JSON.stringify(prev))
+
+        // Mettre à jour les moyennes et le nombre d'évaluations
+        updatedEstablishment.averageRatings = responseData.averageRatings || {
+          teaching: 0,
+          employability: 0,
+          network: 0,
+          overall: 0,
+        }
+
+        // Calculer la note globale
+        if (updatedEstablishment.averageRatings) {
+          const { teaching, employability, network } = updatedEstablishment.averageRatings
+          const values = [teaching || 0, employability || 0, network || 0].filter((v) => v > 0)
+          updatedEstablishment.averageRatings.overall =
+            values.length > 0 ? values.reduce((sum, val) => sum + val, 0) / values.length : 0
+        }
+
+        updatedEstablishment.numRatings = responseData.numRatings || 0
+
+        // Ajouter la nouvelle évaluation à la liste
+        if (!updatedEstablishment.ratings) {
+          updatedEstablishment.ratings = []
+        }
+
+        // Ajouter la nouvelle évaluation avec les informations de l'utilisateur
+        updatedEstablishment.ratings.push({
+          user: {
+            _id: responseData.userId || "unknown",
+            name: responseData.userName || "Utilisateur",
+            firstName: responseData.userFirstName,
+            lastName: responseData.userLastName,
+          },
+          teaching: ratings.teaching,
+          employability: ratings.employability,
+          network: ratings.network,
+          createdAt: new Date().toISOString(),
+        })
+
+        return updatedEstablishment
+      })
+
+      // Réinitialiser le formulaire
       setRatings({ teaching: 0, employability: 0, network: 0 })
       alert("Votre évaluation a été soumise avec succès!")
     } catch (error) {
@@ -255,4 +323,3 @@ const EstablishmentDetail = () => {
 }
 
 export default EstablishmentDetail
-

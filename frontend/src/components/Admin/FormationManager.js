@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { getAdminFormations, deleteFormation } from "../../services/api"
-import {  Trash, Eye, Search } from "lucide-react"
+import { Trash, Eye, Search } from "lucide-react"
 import "./FormationManager.css"
 
 const FormationManager = () => {
@@ -76,10 +76,10 @@ const FormationManager = () => {
     setShowModal(true)
   }
 
- //const handleEdit = (formation) => {
-    // Rediriger vers la page d'édition ou ouvrir un modal d'édition
+  //const handleEdit = (formation) => {
+  // Rediriger vers la page d'édition ou ouvrir un modal d'édition
   //  window.location.href = `/admin/formations/edit/${formation._id}`
- // }
+  // }
 
   const formatDate = (dateString) => {
     if (!dateString) return "Date non spécifiée"
@@ -131,7 +131,6 @@ const FormationManager = () => {
     <div className="formation-manager">
       <div className="manager-header">
         <h2>Gestion des Formations</h2>
-      
       </div>
 
       <div className="manager-toolbar">
@@ -192,7 +191,7 @@ const FormationManager = () => {
                   <td>
                     {formatDate(formation.startDate)} - {formatDate(formation.endDate)}
                   </td>
-                  <td>{formation.inscriptions || 0}</td>
+                  <td>{formation.inscriptionsCount || 0}</td>
                   <td className="actions-cell">
                     <button className="action-btn view-btn3" onClick={() => handleView(formation)}>
                       <Eye size={18} />
@@ -290,4 +289,3 @@ const FormationManager = () => {
 }
 
 export default FormationManager
-

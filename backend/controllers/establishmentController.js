@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler"
 import Establishment from "../models/Establishment.js"
 import ConcoursStats from "../models/ConcoursStats.js"
 import { validateEstablishmentData } from "../utils/validationUtils.js"
+import User from "../models/User.js" // Ajoutez cette ligne pour importer le modèle User
 
 // @desc    Create an establishment
 // @route   POST /api/establishments
@@ -55,56 +56,68 @@ const getEstablishments = asyncHandler(async (req, res) => {
 // @route   GET /api/establishments/:id
 // @access  Public
 const getEstablishmentById = asyncHandler(async (req, res) => {
-  // D'abord, récupérer l'établissement avec ses concours
-  const establishment = await Establishment.findById(req.params.id).populate(
-    "concours",
-    "title organizerName organizerLogo",
-  )
+  try {
+    // D'abord, récupérer l'établissement avec ses concours et les utilisateurs qui ont noté
+    const establishment = await Establishment.findById(req.params.id)
+      .populate("concours", "title organizerName organizerLogo")
+      .populate("ratings.user", "name firstName lastName")
 
-  if (!establishment) {
-    res.status(404)
-    throw new Error("Établissement non trouvé")
-  }
-
-  // Transformer en objet pour pouvoir le modifier
-  const responseData = establishment.toObject()
-
-  // Ensure averageRatings exists
-  if (!responseData.averageRatings) {
-    responseData.averageRatings = {
-      teaching: 0,
-      employability: 0,
-      network: 0,
+    if (!establishment) {
+      res.status(404)
+      throw new Error("Établissement non trouvé")
     }
-  }
 
-  // Si l'établissement a des concours associés, récupérer leurs statistiques
-  if (responseData.concours && responseData.concours.length > 0) {
-    // Récupérer les statistiques pour chaque concours
-    const concoursIds = responseData.concours.map((c) => c._id)
-    const concoursStats = await ConcoursStats.find({ concoursId: { $in: concoursIds } })
+    // Transformer en objet pour pouvoir le modifier
+    const responseData = establishment.toObject()
 
-    // Créer un map des statistiques par ID de concours pour un accès facile
-    const statsMap = {}
-    concoursStats.forEach((stat) => {
-      statsMap[stat.concoursId.toString()] = {
-        averageRating: stat.averageRating || 0,
-        numRatings: stat.ratings?.length || 0,
+    // Ensure averageRatings exists
+    if (!responseData.averageRatings) {
+      responseData.averageRatings = {
+        teaching: 0,
+        employability: 0,
+        network: 0,
+        overall: 0,
       }
-    })
+    }
 
-    // Ajouter les statistiques à chaque concours
-    responseData.concours = responseData.concours.map((concours) => {
-      const stats = statsMap[concours._id.toString()] || { averageRating: 0, numRatings: 0 }
-      return {
-        ...concours,
-        averageRating: stats.averageRating,
-        numRatings: stats.numRatings,
-      }
-    })
+    // Calculer la note globale
+    const { teaching, employability, network } = responseData.averageRatings
+    const values = [teaching || 0, employability || 0, network || 0].filter((v) => v > 0)
+    responseData.averageRatings.overall =
+      values.length > 0 ? values.reduce((sum, val) => sum + val, 0) / values.length : 0
+
+    // Si l'établissement a des concours associés, récupérer leurs statistiques
+    if (responseData.concours && responseData.concours.length > 0) {
+      // Récupérer les statistiques pour chaque concours
+      const concoursIds = responseData.concours.map((c) => c._id)
+      const concoursStats = await ConcoursStats.find({ concoursId: { $in: concoursIds } })
+
+      // Créer un map des statistiques par ID de concours pour un accès facile
+      const statsMap = {}
+      concoursStats.forEach((stat) => {
+        statsMap[stat.concoursId.toString()] = {
+          averageRating: stat.averageRating || 0,
+          numRatings: stat.ratings?.length || 0,
+        }
+      })
+
+      // Ajouter les statistiques à chaque concours
+      responseData.concours = responseData.concours.map((concours) => {
+        const stats = statsMap[concours._id.toString()] || { averageRating: 0, numRatings: 0 }
+        return {
+          ...concours,
+          averageRating: stats.averageRating,
+          numRatings: stats.numRatings,
+        }
+      })
+    }
+
+    res.json(responseData)
+  } catch (error) {
+    console.error("Erreur lors de la récupération de l'établissement:", error)
+    res.status(500)
+    throw new Error("Erreur lors de la récupération de l'établissement: " + error.message)
   }
-
-  res.json(responseData)
 })
 
 // @desc    Update an establishment
@@ -178,6 +191,9 @@ const deleteEstablishment = asyncHandler(async (req, res) => {
 // @route   POST /api/establishments/:id/ratings
 // @access  Private
 const rateEstablishment = asyncHandler(async (req, res) => {
+  console.log("Utilisateur authentifié:", req.user._id, "Type:", req.user.type)
+  console.log("POST /api/establishments/:id/rate", req.body)
+
   const { teaching, employability, network } = req.body
   const establishment = await Establishment.findById(req.params.id)
 
@@ -186,19 +202,35 @@ const rateEstablishment = asyncHandler(async (req, res) => {
     throw new Error("Établissement non trouvé")
   }
 
+  // Récupérer les informations complètes de l'utilisateur
+  const user = await User.findById(req.user._id)
+
   // Initialize ratings array if it doesn't exist
   if (!establishment.ratings) {
     establishment.ratings = []
   }
 
-  const rating = {
-    user: req.user._id,
-    teaching,
-    employability,
-    network,
+  // Vérifier si l'utilisateur a déjà noté cet établissement
+  const existingRatingIndex = establishment.ratings.findIndex(
+    (r) => r.user && r.user.toString() === req.user._id.toString(),
+  )
+
+  if (existingRatingIndex !== -1) {
+    // Mettre à jour la note existante
+    establishment.ratings[existingRatingIndex].teaching = teaching
+    establishment.ratings[existingRatingIndex].employability = employability
+    establishment.ratings[existingRatingIndex].network = network
+  } else {
+    // Ajouter une nouvelle note
+    const rating = {
+      user: req.user._id,
+      teaching,
+      employability,
+      network,
+    }
+    establishment.ratings.push(rating)
   }
 
-  establishment.ratings.push(rating)
   establishment.numRatings = establishment.ratings.length
 
   // Calculate average ratings
@@ -212,12 +244,27 @@ const rateEstablishment = asyncHandler(async (req, res) => {
     network: calculateAverage("network"),
   }
 
+  // Calculer la note globale
+  const values = [
+    establishment.averageRatings.teaching,
+    establishment.averageRatings.employability,
+    establishment.averageRatings.network,
+  ]
+  const overall = values.reduce((sum, val) => sum + val, 0) / values.length
+
   await establishment.save()
 
   res.status(201).json({
     message: "Évaluation ajoutée avec succès",
-    averageRatings: establishment.averageRatings,
+    averageRatings: {
+      ...establishment.averageRatings,
+      overall,
+    },
     numRatings: establishment.numRatings,
+    userId: req.user._id,
+    userName: user ? user.name : "Utilisateur",
+    userFirstName: user ? user.firstName : "",
+    userLastName: user ? user.lastName : "",
   })
 })
 
@@ -229,4 +276,3 @@ export {
   deleteEstablishment,
   rateEstablishment,
 }
-

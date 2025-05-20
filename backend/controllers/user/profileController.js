@@ -5,30 +5,131 @@ import User from "../../models/User.js"
 // @route   GET /api/user/profile
 // @access  Private
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
+  try {
+    console.log("Récupération du profil pour l'utilisateur:", req.user._id)
 
-  if (user) {
-    res.json({
+    // Option 1: Utiliser strictPopulate: false pour éviter l'erreur
+    const user = await User.findById(req.user._id)
+      .populate({
+        path: "downloadedDocuments",
+        select: "title description fileUrl fileType createdAt downloads price type",
+      })
+      .populate({
+        path: "formations",
+        select: "title description startDate endDate image price duration",
+      })
+      .populate("applications")
+      .populate("alerts")
+      .lean()
+      .exec()
+
+    if (!user) {
+      console.log("Utilisateur non trouvé")
+      return res.status(404).json({ message: "Utilisateur non trouvé" })
+    }
+
+    console.log("Profil utilisateur trouvé")
+    console.log("Documents téléchargés:", user.downloadedDocuments?.length || 0)
+    console.log("Formations:", user.formations?.length || 0)
+    console.log("Applications:", user.applications?.length || 0)
+    console.log("Alertes:", user.alerts?.length || 0)
+
+    // S'assurer que toutes les propriétés existent pour éviter les erreurs
+    const userResponse = {
       _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      phone: user.phone,
-      isAdmin: user.isAdmin,
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      isAdmin: user.isAdmin || false,
       education: user.education || [],
       experience: user.experience || [],
+      downloadedDocuments: user.downloadedDocuments || [],
+      formations: user.formations || [],
+      applications: user.applications || [],
+      alerts: user.alerts || [],
       notificationSettings: user.notificationSettings || {
         email: true,
         sms: false,
         push: true,
       },
       profileCompletion: calculateProfileCompletion(user),
+    }
+
+    res.json(userResponse)
+  } catch (error) {
+    console.error("Erreur lors de la récupération du profil:", error)
+    res.status(500).json({
+      message: "Erreur lors de la récupération du profil",
+      error: error.message,
     })
-  } else {
-    res.status(404)
-    throw new Error("Utilisateur non trouvé")
   }
 })
+
+// @desc    Update user password
+// @route   PUT /api/user/profile/password
+// @access  Private
+const updateUserPassword = asyncHandler(async (req, res) => {
+  try {
+    console.log("Mise à jour du mot de passe pour l'utilisateur:", req.user._id)
+
+    const user = await User.findById(req.user._id)
+
+    if (user) {
+      const { currentPassword, newPassword } = req.body
+      console.log("Vérification du mot de passe actuel")
+
+      // Vérifier si le mot de passe actuel est correct
+      const isMatch = await user.matchPassword(currentPassword)
+
+      if (!isMatch) {
+        console.log("Mot de passe actuel incorrect")
+        res.status(401)
+        throw new Error("Mot de passe actuel incorrect")
+      }
+
+      // Mettre à jour le mot de passe
+      user.password = newPassword
+      await user.save()
+      console.log("Mot de passe mis à jour avec succès")
+
+      res.json({ message: "Mot de passe mis à jour avec succès" })
+    } else {
+      console.log("Utilisateur non trouvé")
+      res.status(404)
+      throw new Error("Utilisateur non trouvé")
+    }
+  } catch (error) {
+    console.error("Erreur lors de la mise à jour du mot de passe:", error)
+    res.status(500)
+    throw new Error("Erreur lors de la mise à jour du mot de passe: " + error.message)
+  }
+})
+
+// Fonction utilitaire pour calculer le pourcentage de complétion du profil
+const calculateProfileCompletion = (user) => {
+  let completionScore = 0
+  let totalFields = 0
+
+  // Champs de base
+  const baseFields = ["firstName", "lastName", "email", "phone"]
+  baseFields.forEach((field) => {
+    totalFields++
+    if (user[field]) completionScore++
+  })
+
+  // Éducation
+  totalFields++
+  if (user.education && user.education.length > 0) completionScore++
+
+  // Expérience
+  totalFields++
+  if (user.experience && user.experience.length > 0) completionScore++
+
+  // Calcul du pourcentage
+  return Math.round((completionScore / totalFields) * 100)
+}
+
 
 // @desc    Update user profile
 // @route   PUT /api/user/profile
@@ -210,57 +311,6 @@ const updateNotificationSettings = asyncHandler(async (req, res) => {
   }
 })
 
-// @desc    Update user password
-// @route   PUT /api/user/profile/password
-// @access  Private
-const updateUserPassword = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id)
-
-  if (user) {
-    const { currentPassword, newPassword } = req.body
-
-    // Vérifier si le mot de passe actuel est correct
-    const isMatch = await user.matchPassword(currentPassword)
-
-    if (!isMatch) {
-      res.status(401)
-      throw new Error("Mot de passe actuel incorrect")
-    }
-
-    // Mettre à jour le mot de passe
-    user.password = newPassword
-    await user.save()
-
-    res.json({ message: "Mot de passe mis à jour avec succès" })
-  } else {
-    res.status(404)
-    throw new Error("Utilisateur non trouvé")
-  }
-})
-
-// Fonction utilitaire pour calculer le pourcentage de complétion du profil
-const calculateProfileCompletion = (user) => {
-  let completionScore = 0
-  let totalFields = 0
-
-  // Champs de base
-  const baseFields = ["firstName", "lastName", "email", "phone"]
-  baseFields.forEach((field) => {
-    totalFields++
-    if (user[field]) completionScore++
-  })
-
-  // Éducation
-  totalFields++
-  if (user.education && user.education.length > 0) completionScore++
-
-  // Expérience
-  totalFields++
-  if (user.experience && user.experience.length > 0) completionScore++
-
-  // Calcul du pourcentage
-  return Math.round((completionScore / totalFields) * 100)
-}
 
 export {
   getUserProfile,

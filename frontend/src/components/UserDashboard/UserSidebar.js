@@ -1,7 +1,7 @@
 "use client"
 
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import {  FileText, BookOpen,  Settings, LogOut, User, FileCheck } from "lucide-react"
+import { FileText, BookOpen, Star, Settings, LogOut, User, FileCheck } from "lucide-react"
 import { useAuth } from "../../contexts/AuthContext"
 import "./UserSidebar.css"
 
@@ -34,12 +34,10 @@ const UserSidebar = () => {
       </div>
 
       <nav className="sidebar-nav">
-        <Link to="/user/dashboard" className={`nav-item ${isActive("/user/Dashboard") ? "active" : ""}`}>
+        <Link to="/user/dashboard" className={`nav-item ${isActive("/user/dashboard") ? "active" : ""}`}>
           <User size={20} />
           <span>Tableau de bord</span>
         </Link>
-
-      
 
         <Link to="/user/applications" className={`nav-item ${isActive("/user/applications") ? "active" : ""}`}>
           <FileCheck size={20} />
@@ -61,7 +59,10 @@ const UserSidebar = () => {
           <span>Mes formations</span>
         </Link>
 
-        
+        <Link to="/user/avis" className={`nav-item ${isActive("/user/avis") ? "active" : ""}`}>
+          <Star size={18} />
+          <span>Mes avis</span>
+        </Link>
       </nav>
 
       <div className="sidebar-footer">
@@ -80,4 +81,3 @@ const UserSidebar = () => {
 }
 
 export default UserSidebar
-

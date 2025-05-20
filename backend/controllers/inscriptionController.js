@@ -3,9 +3,7 @@ import Inscription from "../models/Inscription.js"
 import Formation from "../models/Formation.js"
 import Concours from "../models/Concours.js"
 
-// @desc    Créer une nouvelle inscription
-// @route   POST /api/inscriptions
-// @access  Private
+// Modifiez la fonction createInscription pour mettre à jour le compteur d'inscriptions
 const createInscription = asyncHandler(async (req, res) => {
   const { formationId, concoursId, motivation, selectedMonths } = req.body
   let formationData,
@@ -66,6 +64,12 @@ const createInscription = asyncHandler(async (req, res) => {
   console.log("Création d'une inscription avec montant:", amount, "FCFA")
 
   const createdInscription = await inscription.save()
+
+  // Mettre à jour le compteur d'inscriptions dans la formation
+  if (formationId) {
+    await Formation.findByIdAndUpdate(formationId, { $inc: { inscriptionsCount: 1 } })
+  }
+
   res.status(201).json(createdInscription)
 })
 

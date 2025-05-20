@@ -24,7 +24,9 @@ const ResourceList = ({ resources, onEdit, onDelete }) => {
   return (
     <div className="resource-container">
       <h2 className="resource-title">Liste des Ressources</h2>
-      <div className="resource-list">
+
+      {/* Version desktop - tableau */}
+      <div className="resource-list desktop-table">
         <table className="resource-table">
           <thead>
             <tr>
@@ -57,9 +59,40 @@ const ResourceList = ({ resources, onEdit, onDelete }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Version mobile - cartes */}
+      <div className="mobile-cards">
+        {resources.map((resource) => (
+          <div key={resource._id} className="resource-card">
+            <div className="resource-card-title">{resource.title || "Sans titre"}</div>
+
+            <div className="resource-card-info">
+              <span className="resource-card-label">Type</span>
+              <div className="resource-card-value">{resource.type === "past_paper" ? "Ancien sujet" : "Cours"}</div>
+
+              <span className="resource-card-label">Matière</span>
+              <div className="resource-card-value">{resource.subject || "Non spécifié"}</div>
+
+              <span className="resource-card-label">Année</span>
+              <div className="resource-card-value">{resource.year || "Non spécifié"}</div>
+
+              <span className="resource-card-label">Concours associé</span>
+              <div className="resource-card-value">{getConcoursName(resource.concoursId)}</div>
+            </div>
+
+            <div className="resource-card-actions">
+              <button onClick={() => onEdit(resource)} className="resource-card-btn resource-card-btn-edit">
+                Modifier
+              </button>
+              <button onClick={() => onDelete(resource._id)} className="resource-card-btn resource-card-btn-delete">
+                Supprimer
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
 export default ResourceList
-

@@ -1,16 +1,28 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getResources, getFormations, getDocuments } from "../../services/api"
+import { getResources, getFormations, getDocuments, getBusinesses } from "../../services/api"
 import { useNavigate } from "react-router-dom"
-import { FileText, Download, Star, BookOpen, Calendar, Filter } from "lucide-react"
+import { FileText, Download, Star, BookOpen, Calendar, Filter, Building, Search } from "lucide-react"
 import { isAuthenticated } from "../../utils/auth"
 import "./PrepSection.css"
 
 // Composant ResourceCard intégré directement dans PrepSection
 const ResourceCard = ({ resource }) => {
   const navigate = useNavigate()
-  const { _id, title, type, subject, averageRating = 0, numRatings = 0, fileUrl, concours, year, price = 0 } = resource
+  const {
+    _id,
+    title,
+    type,
+    subject,
+    averageRating = 0,
+    numRatings = 0,
+    fileUrl,
+    concours,
+    year,
+    price = 0,
+    business,
+  } = resource
 
   const handleCardClick = () => {
     if (type === "formation") {
@@ -99,6 +111,9 @@ const ResourceCard = ({ resource }) => {
   // Déterminer le texte du bouton en fonction du type
   const buttonText = type === "formation" ? "S'inscrire" : "Télécharger"
 
+  // Afficher le nom de l'entreprise si disponible
+  const businessName = business?.structureName || business?.name || "Entreprise non spécifiée"
+
   return (
     <div className="resource-card" onClick={handleCardClick}>
       <div className="resource-card-content">
@@ -107,6 +122,11 @@ const ResourceCard = ({ resource }) => {
         <div className="resource-card-info">
           <h3 className="resource-card-title">{formattedTitle}</h3>
           <p className="resource-card-subtitle">{subtitle}</p>
+
+          <div className="resource-card-business">
+            <Building size={14} className="business-icon" />
+            <span>{businessName}</span>
+          </div>
 
           <div className="resource-card-rating">
             <div className="stars">{renderStars()}</div>
@@ -148,13 +168,35 @@ const ResourceCard = ({ resource }) => {
 
 const PrepSection = () => {
   const [resources, setResources] = useState([])
+  const [businesses, setBusinesses] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [filter, setFilter] = useState("all") // all, formation, document, past_paper
+  const [businessFilter, setBusinessFilter] = useState("all") // all, business_id
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     fetchResources()
+    fetchBusinesses()
   }, [])
+
+  const fetchBusinesses = async () => {
+    try {
+      const response = await getBusinesses()
+      console.log("Businesses fetched:", response)
+
+      let businessList = []
+      if (Array.isArray(response)) {
+        businessList = response
+      } else if (response && Array.isArray(response.data)) {
+        businessList = response.data
+      }
+
+      setBusinesses(businessList)
+    } catch (err) {
+      console.error("Error fetching businesses:", err)
+    }
+  }
 
   const fetchResources = async () => {
     try {
@@ -197,8 +239,9 @@ const PrepSection = () => {
           description: formation.description,
           concours: formation.concours,
           price: formation.price,
-          averageRating: formation.averageRating || 0,
-          numRatings: formation.numRatings || 0,
+          averageRating: formation.averageRating || formation.rating || 0,
+          numRatings: formation.numRatings || formation.numReviews || 0,
+          business: formation.business,
         }))
         allResources = [...allResources, ...formattedFormations]
       }
@@ -214,8 +257,9 @@ const PrepSection = () => {
           concours: document.concours,
           fileUrl: document.fileUrl,
           price: document.price,
-          averageRating: document.averageRating || 0,
-          numRatings: document.numRatings || 0,
+          averageRating: document.averageRating || document.rating || 0,
+          numRatings: document.numRatings || document.numReviews || 0,
+          business: document.business,
         }))
         allResources = [...allResources, ...formattedDocuments]
       }
@@ -230,21 +274,84 @@ const PrepSection = () => {
     }
   }
 
-  // Filtrer les ressources selon le type sélectionné
-  const filteredResources = filter === "all" ? resources : resources.filter((resource) => resource.type === filter)
+  // Filtrer les ressources selon les critères sélectionnés
+  const filteredResources = resources.filter((resource) => {
+    // Filtre par type
+    if (filter !== "all" && resource.type !== filter) {
+      return false
+    }
+
+    // Filtre par entreprise
+    if (businessFilter !== "all") {
+      const businessId = resource.business?._id || resource.business
+      if (!businessId || businessId.toString() !== businessFilter) {
+        return false
+      }
+    }
+
+    // Filtre par terme de recherche
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase()
+      const title = resource.title || ""
+      const description = resource.description || ""
+      const subject = resource.subject || ""
+      const concoursName = resource.concours?.name || resource.concours?.title || ""
+
+      return (
+        title.toLowerCase().includes(searchLower) ||
+        description.toLowerCase().includes(searchLower) ||
+        subject.toLowerCase().includes(searchLower) ||
+        concoursName.toLowerCase().includes(searchLower)
+      )
+    }
+
+    return true
+  })
 
   return (
     <div className="prep-section">
       <div className="prep-section-header">
         <h1 className="section-title">Ressources de préparation</h1>
-        <div className="filter-container">
-          <Filter size={20} />
-          <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-select">
-            <option value="all">Tous les types</option>
-            <option value="formation">Formations</option>
-            <option value="document">Documents</option>
-            <option value="past_paper">Anciens sujets</option>
-          </select>
+
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <Search size={20} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Rechercher une ressource..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+        </div>
+
+        <div className="filters-container">
+          <div className="filter-container">
+            <Filter size={20} />
+            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="filter-select">
+              <option value="all">Tous les types</option>
+              <option value="formation">Formations</option>
+              <option value="document">Documents</option>
+              <option value="past_paper">Anciens sujets</option>
+            </select>
+          </div>
+
+          <div className="filter-container">
+            <Building size={20} />
+            <select
+              value={businessFilter}
+              onChange={(e) => setBusinessFilter(e.target.value)}
+              className="filter-select"
+            >
+              <option value="all">Toutes les entreprises</option>
+              {businesses.map((business) => (
+                <option key={business._id} value={business._id}>
+                  {business.structureName || business.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -254,7 +361,13 @@ const PrepSection = () => {
         <div className="error-message">{error}</div>
       ) : filteredResources.length === 0 ? (
         <div className="no-resources-message">
-          {filter === "all" ? "Aucune ressource disponible." : `Aucune ressource de type "${filter}" disponible.`}
+          {filter === "all" && businessFilter === "all"
+            ? "Aucune ressource disponible."
+            : businessFilter !== "all" && filter === "all"
+              ? `Aucune ressource disponible pour cette entreprise.`
+              : filter !== "all" && businessFilter === "all"
+                ? `Aucune ressource de type "${filter}" disponible.`
+                : `Aucune ressource de type "${filter}" disponible pour cette entreprise.`}
         </div>
       ) : (
         <div className="resources-grid">
@@ -263,9 +376,15 @@ const PrepSection = () => {
           ))}
         </div>
       )}
+
+      {filteredResources.length > 0 && (
+        <div className="resources-count">
+          {filteredResources.length} ressource{filteredResources.length > 1 ? "s" : ""} trouvée
+          {filteredResources.length > 1 ? "s" : ""}
+        </div>
+      )}
     </div>
   )
 }
 
 export default PrepSection
-

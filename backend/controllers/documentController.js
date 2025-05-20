@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler"
 import Document from "../models/Document.js"
 import mongoose from "mongoose"
 import Business from "../models/Business.js"
+import User from "../models/User.js"
 
 
 // @desc    Create a new document
@@ -128,24 +129,33 @@ const getAllDocuments = asyncHandler(async (req, res) => {
   }
 })
 
-// @desc    Get a single document by ID
+// @desc    Récupérer un document par ID
 // @route   GET /api/documents/:id
 // @access  Public
 const getDocumentById = asyncHandler(async (req, res) => {
   try {
     const document = await Document.findById(req.params.id)
-      .populate("business", "name")
-      .populate("concours", "title name")
+      .populate("business", "structureName name logo description")
+      .populate("concours", "title name _id")
+      .populate("ratings.user", "name firstName lastName") // Ajouter cette ligne pour récupérer les infos utilisateur
 
     if (!document) {
-      return res.status(404).json({ message: "Document not found" })
+      res.status(404)
+      throw new Error("Document non trouvé")
     }
+
+    // Incrémenter le compteur de vues
+    document.views = (document.views || 0) + 1
+    await document.save()
 
     res.json(document)
   } catch (error) {
-    res.status(500).json({ message: error.message })
+    console.error("Erreur lors de la récupération du document:", error)
+    res.status(500)
+    throw new Error("Erreur lors de la récupération du document: " + error.message)
   }
 })
+
 
 // @desc    Update a document
 // @route   PUT /api/documents/:id
@@ -199,42 +209,55 @@ const deleteDocument = asyncHandler(async (req, res) => {
   }
 })
 
-// @desc    Rate a document
+// @desc    Noter un document
 // @route   POST /api/documents/:id/rate
 // @access  Private
 const rateDocument = asyncHandler(async (req, res) => {
-  const { rating } = req.body
+  const { rating, comment } = req.body
+  const document = await Document.findById(req.params.id)
 
-  try {
-    const document = await Document.findById(req.params.id)
-
-    if (!document) {
-      return res.status(404).json({ message: "Document not found" })
-    }
-
-    // Check if the user has already rated the document
-    const alreadyRated = document.ratings.find((r) => r.user.toString() === req.user._id.toString())
-
-    if (alreadyRated) {
-      return res.status(400).json({ message: "Document already rated" })
-    }
-
-    const rate = {
-      user: req.user._id,
-      rating: Number(rating),
-    }
-
-    document.ratings.push(rate)
-    document.numRatings = document.ratings.length
-    document.rating = document.ratings.reduce((acc, item) => item.rating + acc, 0) / document.ratings.length
-
-    await document.save()
-
-    res.status(201).json({ message: "Document rated" })
-  } catch (error) {
-    res.status(400).json({ message: error.message })
+  if (!document) {
+    res.status(404)
+    throw new Error("Document non trouvé")
   }
+
+  // Récupérer les informations complètes de l'utilisateur
+  const user = await User.findById(req.user._id)
+
+  // Vérifier si l'utilisateur a déjà noté ce document
+  const alreadyRated = document.ratings.find((r) => r.user && r.user.toString() === req.user._id.toString())
+
+  if (alreadyRated) {
+    // Mettre à jour la note existante
+    alreadyRated.rating = rating
+    alreadyRated.comment = comment
+  } else {
+    // Ajouter une nouvelle note
+    document.ratings.push({
+      user: req.user._id,
+      rating,
+      comment,
+      createdAt: Date.now(),
+    })
+  }
+
+  // Mettre à jour le nombre d'avis et la note moyenne
+  document.numRatings = document.ratings.length
+  document.rating = document.ratings.reduce((acc, item) => item.rating + acc, 0) / document.ratings.length
+
+  await document.save()
+
+  res.status(201).json({
+    message: "Avis ajouté avec succès",
+    rating: document.rating,
+    numRatings: document.numRatings,
+    userId: req.user._id,
+    userName: user ? user.name : "Utilisateur",
+    userFirstName: user ? user.firstName : "",
+    userLastName: user ? user.lastName : "",
+  })
 })
+
 
 // @desc    Get all documents for a business
 // @route   GET /api/business/documents

@@ -169,10 +169,23 @@ const userSchema = mongoose.Schema(
     education: [educationSchema],
     experience: [experienceSchema],
     alerts: [alertSchema],
+    // Ajout du champ formations qui manquait dans le schéma
+    formations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Formation",
+      },
+    ],
     downloadedDocuments: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Document",
+      },
+    ],
+    applications: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Application",
       },
     ],
     notificationSettings: {

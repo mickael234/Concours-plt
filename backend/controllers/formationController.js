@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler"
 import Formation from "../models/Formation.js"
 import Inscription from "../models/Inscription.js"
+import User from "../models/User.js"
 
 // @desc    Récupérer toutes les formations
 // @route   GET /api/formations
@@ -25,25 +26,25 @@ const getFormations = asyncHandler(async (req, res) => {
 // @access  Public
 const getFormationById = asyncHandler(async (req, res) => {
   try {
-    // Vérifier si l'ID est "business" et rediriger vers getBusinessFormations
-    if (req.params.id === "business") {
-      return getBusinessFormations(req, res)
-    }
-
     const formation = await Formation.findById(req.params.id)
-      .populate("business", "structureName logo")
+      .populate("business", "structureName name logo description")
       .populate("concours", "title")
+      .populate("ratings.user", "name firstName lastName") // Ajouter cette ligne pour récupérer les infos utilisateur
 
-    if (formation) {
-      res.json(formation)
-    } else {
+    if (!formation) {
       res.status(404)
       throw new Error("Formation non trouvée")
     }
+
+    // Incrémenter le compteur de vues
+    formation.views = (formation.views || 0) + 1
+    await formation.save()
+
+    res.json(formation)
   } catch (error) {
     console.error("Erreur lors de la récupération de la formation:", error)
-    res.status(error.kind === "ObjectId" ? 404 : 500)
-    throw new Error("Erreur lors de la récupération de la formation")
+    res.status(500)
+    throw new Error("Erreur lors de la récupération de la formation: " + error.message)
   }
 })
 
@@ -212,62 +213,50 @@ const deleteFormation = asyncHandler(async (req, res) => {
 // @route   POST /api/formations/:id/rate
 // @access  Private
 const rateFormation = asyncHandler(async (req, res) => {
-  try {
-    const { rating, comment } = req.body
+  const { rating, comment } = req.body
+  const formation = await Formation.findById(req.params.id)
 
-    if (!rating) {
-      res.status(400)
-      throw new Error("La note est requise")
-    }
-
-    // Vérifier que la note est entre 1 et 5
-    if (rating < 1 || rating > 5) {
-      res.status(400)
-      throw new Error("La note doit être comprise entre 1 et 5")
-    }
-
-    const formation = await Formation.findById(req.params.id)
-
-    if (!formation) {
-      res.status(404)
-      throw new Error("Formation non trouvée")
-    }
-
-    // Vérifier si l'utilisateur a déjà noté cette formation
-    const alreadyRated = formation.ratings.find((r) => r.user && r.user.toString() === req.user._id.toString())
-
-    if (alreadyRated) {
-      // Mettre à jour la note existante
-      alreadyRated.rating = Number(rating)
-      alreadyRated.comment = comment || alreadyRated.comment
-      alreadyRated.createdAt = Date.now()
-    } else {
-      // Ajouter une nouvelle note
-      formation.ratings.push({
-        user: req.user._id,
-        rating: Number(rating),
-        comment: comment || "",
-        createdAt: Date.now(),
-      })
-    }
-
-    // Recalculer la note moyenne
-    formation.numReviews = formation.ratings.length
-    formation.rating = formation.ratings.reduce((acc, item) => item.rating + acc, 0) / formation.ratings.length
-
-    await formation.save()
-    res.status(201).json({
-      message: "Avis ajouté avec succès",
-      rating: formation.rating,
-      numReviews: formation.numReviews,
-    })
-  } catch (error) {
-    console.error("Erreur lors de la notation de la formation:", error)
-    res.status(error.statusCode || 500)
-    throw new Error(error.message || "Erreur lors de la notation de la formation")
+  if (!formation) {
+    res.status(404)
+    throw new Error("Formation non trouvée")
   }
-})
 
+  // Récupérer les informations complètes de l'utilisateur
+  const user = await User.findById(req.user._id)
+
+  // Vérifier si l'utilisateur a déjà noté cette formation
+  const alreadyRated = formation.ratings.find((r) => r.user && r.user.toString() === req.user._id.toString())
+
+  if (alreadyRated) {
+    // Mettre à jour la note existante
+    alreadyRated.rating = rating
+    alreadyRated.comment = comment
+  } else {
+    // Ajouter une nouvelle note
+    formation.ratings.push({
+      user: req.user._id,
+      rating,
+      comment,
+      createdAt: Date.now(),
+    })
+  }
+
+  // Mettre à jour le nombre d'avis et la note moyenne
+  formation.numReviews = formation.ratings.length
+  formation.rating = formation.ratings.reduce((acc, item) => item.rating + acc, 0) / formation.ratings.length
+
+  await formation.save()
+
+  res.status(201).json({
+    message: "Avis ajouté avec succès",
+    rating: formation.rating,
+    numReviews: formation.numReviews,
+    userId: req.user._id,
+    userName: user ? user.name : "Utilisateur",
+    userFirstName: user ? user.firstName : "",
+    userLastName: user ? user.lastName : "",
+  })
+})
 // @desc    Récupérer les formations d'une entreprise
 // @route   GET /api/formations/business/formations
 // @access  Private/Business
@@ -296,19 +285,35 @@ const getBusinessFormations = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const getAdminFormations = asyncHandler(async (req, res) => {
   try {
+    // Récupérer toutes les formations
     const formations = await Formation.find({})
       .populate("business", "structureName logo")
       .populate("concours", "title")
       .sort({ createdAt: -1 })
 
-    res.json(formations)
+    // Récupérer le nombre d'inscriptions pour chaque formation
+    const formationsWithInscriptions = await Promise.all(
+      formations.map(async (formation) => {
+        // Compter les inscriptions pour cette formation
+        const inscriptionsCount = await Inscription.countDocuments({ formation: formation._id })
+
+        // Créer un nouvel objet avec toutes les propriétés de la formation
+        const formationObj = formation.toObject()
+
+        // Ajouter le nombre d'inscriptions
+        formationObj.inscriptionsCount = inscriptionsCount
+
+        return formationObj
+      }),
+    )
+
+    res.json(formationsWithInscriptions)
   } catch (error) {
     console.error("Erreur lors de la récupération des formations admin:", error)
     res.status(500)
     throw new Error("Erreur lors de la récupération des formations admin: " + error.message)
   }
 })
-
 // @desc    S'inscrire à une formation
 // @route   POST /api/formations/:id/inscriptions
 // @access  Private
@@ -347,6 +352,7 @@ const registerForFormation = asyncHandler(async (req, res) => {
       user: req.user._id,
       formation: formation._id,
       business: formation.business,
+      type: "formation", // Ajout explicite du type
       status: "pending",
       paymentStatus: "pending",
       amount: formation.price || 0,
@@ -359,12 +365,8 @@ const registerForFormation = asyncHandler(async (req, res) => {
 
     const createdInscription = await inscription.save()
 
-    // Ajouter l'inscription à la formation
-    if (!formation.inscriptions) {
-      formation.inscriptions = []
-    }
-    formation.inscriptions.push(createdInscription._id)
-    await formation.save()
+    // Incrémenter le compteur d'inscriptions dans la formation
+    await Formation.findByIdAndUpdate(formation._id, { $inc: { inscriptionsCount: 1 } })
 
     res.status(201).json(createdInscription)
   } catch (error) {
@@ -373,6 +375,7 @@ const registerForFormation = asyncHandler(async (req, res) => {
     throw new Error(error.message || "Erreur lors de l'inscription à la formation")
   }
 })
+
 
 export {
   getFormations,

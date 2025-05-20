@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getStats, getUserProfile } from "../../services/api"
+import { getUserProfile, getUserFormations } from "../../services/api"
 import UserSidebar from "../../components/UserDashboard/UserSidebar"
 import "./Dashboard.css"
 
@@ -20,19 +20,31 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true)
-        // Récupérer les statistiques générales
-        const statsData = await getStats()
-        setStats({
-          concours: statsData?.concours || 0,
-          formations: statsData?.formations || 0,
-          documents: statsData?.documents || 0,
-          applications: statsData?.applications || 0,
-        })
 
-        // Récupérer le profil utilisateur
-        const userData = await getUserProfile()
+        // Récupérer le profil utilisateur et les formations en parallèle
+        const [userData, userFormations] = await Promise.all([
+          getUserProfile(),
+          getUserFormations().catch((err) => {
+            console.error("Erreur lors de la récupération des formations:", err)
+            return []
+          }),
+        ])
+
+        console.log("Données utilisateur récupérées:", userData)
+        console.log("Formations utilisateur récupérées:", userFormations)
+
         setUser(userData)
 
+        // Calculer les statistiques personnelles de l'utilisateur
+        const userStats = {
+          concours: userData?.alerts?.length || 0, // Nombre de concours suivis (alertes)
+          formations: userFormations?.length || 0, // Nombre de formations à partir de l'API dédiée
+          documents: userData?.downloadedDocuments?.length || 0, // Nombre de documents téléchargés
+          applications: userData?.applications?.length || 0, // Nombre de candidatures
+        }
+        console.log("Statistiques calculées:", userStats)
+
+        setStats(userStats)
         setError(null)
       } catch (error) {
         console.error("Erreur lors du chargement des données du tableau de bord:", error)
@@ -58,13 +70,13 @@ const Dashboard = () => {
             <>
               <div className="dashboard-header">
                 <h1>Tableau de bord</h1>
-                <p>Bienvenue, {user?.firstName || "Utilisateur"} ! Voici un aperçu de votre activité.</p>
+                <p>Bienvenue, {user?.firstName || "Utilisateur"} !</p>
               </div>
 
               <div className="stats-cards">
                 <div className="stat-card">
                   <div className="stat-content">
-                    <h3>Concours disponibles</h3>
+                    <h3>Concours suivis</h3>
                     <p className="stat-value">{stats.concours}</p>
                   </div>
                 </div>
@@ -78,7 +90,7 @@ const Dashboard = () => {
 
                 <div className="stat-card">
                   <div className="stat-content">
-                    <h3>Documents</h3>
+                    <h3>Documents téléchargés</h3>
                     <p className="stat-value">{stats.documents}</p>
                   </div>
                 </div>
@@ -99,4 +111,3 @@ const Dashboard = () => {
 }
 
 export default Dashboard
-

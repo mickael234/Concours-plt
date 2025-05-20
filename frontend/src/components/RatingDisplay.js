@@ -64,7 +64,11 @@ const RatingDisplay = ({ ratings = [], averageRatings = {} }) => {
           {ratings.map((rating, index) => (
             <div key={index} className="user-rating">
               <div className="rating-header">
-                <span className="user-name">{rating.user?.name || "Utilisateur anonyme"}</span>
+                <span className="user-name">
+                  {rating.user?.firstName && rating.user?.lastName
+                    ? `${rating.user.firstName} ${rating.user.lastName}`
+                    : rating.user?.name || "Utilisateur anonyme"}
+                </span>
                 <span className="rating-date">
                   {rating.createdAt ? new Date(rating.createdAt).toLocaleDateString() : "Date inconnue"}
                 </span>
@@ -93,4 +97,3 @@ const RatingDisplay = ({ ratings = [], averageRatings = {} }) => {
 }
 
 export default RatingDisplay
-

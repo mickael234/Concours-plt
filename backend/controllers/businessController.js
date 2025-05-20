@@ -243,7 +243,11 @@ const getBusinessDocuments = asyncHandler(async (req, res) => {
 // @access  Private/Business
 const getBusinessFormations = asyncHandler(async (req, res) => {
   try {
-    const formations = await Formation.find({ business: req.business._id }).sort({ createdAt: -1 })
+    // Modifier cette ligne pour inclure le populate des utilisateurs dans les ratings
+    const formations = await Formation.find({ business: req.business._id })
+      .sort({ createdAt: -1 })
+      .populate("ratings.user", "name firstName lastName") // Ajouter cette partie
+
     res.json(formations)
   } catch (error) {
     console.error("Erreur lors de la récupération des formations:", error)
@@ -251,6 +255,7 @@ const getBusinessFormations = asyncHandler(async (req, res) => {
     throw new Error("Erreur lors de la récupération des formations")
   }
 })
+
 
 // @desc    Obtenir les inscriptions d'une entreprise
 // @route   GET /api/business/inscriptions

@@ -13,15 +13,29 @@ import BusinessManager from "../components/Admin/BusinessManager"
 import InscriptionManager from "../components/Admin/InscriptionManager"
 import Statistics from "../components/Admin/Statistics"
 import { fetchStats } from "../services/api"
-import "../styles/SuperAdminDashboard.css"
-import { Users, Award, Building2, FileText, BookOpen, File, Briefcase, ClipboardList, BarChart3 } from "lucide-react"
+import "./styles/SuperAdminDashboard.css"
+import {
+  Users,
+  Award,
+  Building2,
+  FileText,
+  BookOpen,
+  File,
+  Briefcase,
+  ClipboardList,
+  BarChart3,
+  Bell,
+  Settings,
+  LogOut,
+} from "lucide-react"
 
 const SuperAdminDashboard = () => {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("statistics")
-  const { user } = useAuth()
+  const [showNotifications, setShowNotifications] = useState(false)
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -64,6 +78,11 @@ const SuperAdminDashboard = () => {
     fetchData()
   }, [user, navigate])
 
+  const handleLogout = () => {
+    logout()
+    navigate("/login")
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case "statistics":
@@ -98,13 +117,71 @@ const SuperAdminDashboard = () => {
       <header className="dashboard-header">
         <h1>Tableau de Bord Super Administrateur</h1>
         <div className="user-info">
+          <div className="header-actions">
+            <button className="header-action-button" onClick={() => setShowNotifications(!showNotifications)}>
+              <Bell size={20} />
+              <span className="notification-badge">3</span>
+            </button>
+            <button className="header-action-button">
+              <Settings size={20} />
+            </button>
+            <button className="header-action-button" onClick={handleLogout}>
+              <LogOut size={20} />
+            </button>
+          </div>
           <div className="admin-details">
             <span className="admin-name">{user.name}</span>
             <span className="admin-role">Super Administrateur</span>
           </div>
-          {user.avatar && <img src={user.avatar || "/placeholder.svg"} alt="Admin" className="admin-avatar" />}
+          {user.avatar ? (
+            <img src={user.avatar || "/placeholder.svg"} alt="Admin" className="admin-avatar" />
+          ) : (
+            <div className="admin-avatar-placeholder">{user.name ? user.name.charAt(0).toUpperCase() : "A"}</div>
+          )}
         </div>
       </header>
+
+      {showNotifications && (
+        <div className="notifications-dropdown">
+          <div className="notifications-header">
+            <h3>Notifications</h3>
+            <button onClick={() => setShowNotifications(false)}>Fermer</button>
+          </div>
+          <div className="notifications-list">
+            <div className="notification-item unread">
+              <div className="notification-icon">
+                <Users size={16} />
+              </div>
+              <div className="notification-content">
+                <p className="notification-text">Nouvel utilisateur inscrit</p>
+                <p className="notification-time">Il y a 2 heures</p>
+              </div>
+            </div>
+            <div className="notification-item unread">
+              <div className="notification-icon">
+                <Award size={16} />
+              </div>
+              <div className="notification-content">
+                <p className="notification-text">Nouveau concours créé</p>
+                <p className="notification-time">Il y a 5 heures</p>
+              </div>
+            </div>
+            <div className="notification-item">
+              <div className="notification-icon">
+                <BookOpen size={16} />
+              </div>
+              <div className="notification-content">
+                <p className="notification-text">Nouvelle formation ajoutée</p>
+                <p className="notification-time">Il y a 1 jour</p>
+              </div>
+            </div>
+          </div>
+          <div className="notifications-footer">
+            <button>Voir toutes les notifications</button>
+          </div>
+        </div>
+      )}
+
       <nav className="dashboard-nav">
         <button className={activeTab === "statistics" ? "active" : ""} onClick={() => setActiveTab("statistics")}>
           <BarChart3 size={18} />
@@ -152,4 +229,3 @@ const SuperAdminDashboard = () => {
 }
 
 export default SuperAdminDashboard
-

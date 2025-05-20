@@ -7,6 +7,166 @@
 .formation-detail-header {
   margin-bottom: 20px;
 }
+/* Styles pour les réponses aux avis */
+.avis-response {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f5f8ff;
+  border-radius: 8px;
+  border-left: 3px solid #1976d2;
+}
+
+.response-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.response-author {
+  display: flex;
+  flex-direction: column;
+}
+
+.business-name {
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.response-date {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.response-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.edit-button:hover {
+  color: #1976d2;
+  background-color: rgba(25, 118, 210, 0.1);
+}
+
+.delete-button:hover {
+  color: #d32f2f;
+  background-color: rgba(211, 47, 47, 0.1);
+}
+
+.response-text {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.respond-button-container {
+  margin-top: 10px;
+}
+
+.respond-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f0f4f8;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.respond-button:hover {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.avis-response-form {
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.form-header h4 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.response-textarea {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  resize: vertical;
+  min-height: 100px;
+  font-family: inherit;
+}
+
+.response-textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.response-error {
+  padding: 8px 12px;
+  color: #d32f2f;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+}
+
+.submit-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-button:hover {
+  background-color: #1565c0;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 
 .formation-detail-header h1 {
   font-size: 2rem;
@@ -658,7 +818,32 @@
   color: #666;
   line-height: 1.4;
 }
-/* Ajouter ces styles à votre fichier FormationDetail.css existant */
+.reply-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  color: #1976d2;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.reply-button:hover {
+  background-color: #bbdefb;
+  transform: translateY(-2px);
+}
+
+.reply-button-container {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
 
 /* Styles pour le message "pas d'avis" */
 .no-reviews-message {

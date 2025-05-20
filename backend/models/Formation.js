@@ -1,6 +1,49 @@
 import mongoose from "mongoose"
 import { calculateAverageRating } from "../utils/ratingUtils.js"
 
+// Modifiez le schéma de rating pour inclure la réponse de l'entreprise et la réponse de l'utilisateur
+const ratingSchema = mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5,
+  },
+  comment: {
+    type: String,
+    default: "",
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  // Ajout du champ pour la réponse de l'entreprise
+  businessResponse: {
+    text: String,
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    business: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Business",
+    },
+    // Ajout du champ pour la réponse de l'utilisateur à la réponse de l'entreprise
+    userReply: {
+      text: String,
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  },
+})
+
 const formationSchema = mongoose.Schema(
   {
     title: {
@@ -80,29 +123,7 @@ const formationSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
-    ratings: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        rating: {
-          type: Number,
-          required: true,
-          min: 1,
-          max: 5,
-        },
-        comment: {
-          type: String,
-          default: "",
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
+    ratings: [ratingSchema],
     rating: {
       type: Number,
       default: 0,
@@ -134,6 +155,11 @@ const formationSchema = mongoose.Schema(
         type: String,
       },
     ],
+    // Ajout d'un champ pour stocker le nombre d'inscriptions
+    inscriptionsCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
@@ -167,4 +193,3 @@ formationSchema.pre("save", function (next) {
 const Formation = mongoose.model("Formation", formationSchema)
 
 export default Formation
-

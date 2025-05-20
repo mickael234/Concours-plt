@@ -696,7 +696,7 @@ export const uploadFile = async (file, type = "file") => {
 export const getUserDocuments = async () => {
   try {
     console.log("Appel de l'API pour récupérer les documents de l'utilisateur")
-    const response = await api.get("/documents/user/documents")
+    const response = await api.get("/user/documents")
     console.log("Réponse de l'API:", response.data)
     return response.data
   } catch (error) {
@@ -721,14 +721,25 @@ export const uploadUserDocument = async (documentData) => {
 }
 
 export const deleteUserDocument = async (documentId) => {
-  const response = await api.delete(`/user/documents/${documentId}`)
-  return response.data
+  try {
+    const response = await api.delete(`/user/documents/${documentId}`)
+    return response.data
+  } catch (error) {
+    console.error("Erreur lors de la suppression du document:", error)
+    throw error
+  }
 }
+
 
 // User Dashboard - Formations
 export const getUserFormations = async () => {
-  const response = await api.get("/user/formations")
-  return response.data
+  try {
+    const response = await api.get("/user/formations")
+    return response.data
+  } catch (error) {
+    console.error("Erreur lors de la récupération des formations:", error)
+    throw error
+  }
 }
 
 // S'inscrire à une formation
@@ -829,15 +840,96 @@ export const withdrawApplication = async (applicationId) => {
 // Profil utilisateur
 export const getUserProfile = async () => {
   try {
-    const token = localStorage.getItem("token")
-    if (!token) {
-      throw new Error("Vous devez être connecté pour accéder à votre profil")
-    }
-
     const response = await api.get("/user/profile")
     return response.data
   } catch (error) {
-    console.error("getUserProfile error:", error)
+    console.error("Erreur lors de la récupération du profil:", error)
+    throw error
+  }
+}
+// Fonction pour répondre à un avis
+// Modifiez ces fonctions dans api.js
+export const respondToRating = async (ratingId, data) => {
+  try {
+    console.log("Appel API respondToRating avec ID:", ratingId, "et données:", data);
+
+    // Utiliser l'URL complète avec API_URL au lieu d'une URL relative
+    const response = await fetch(`${API_URL}/ratings/${ratingId}/respond`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("businessToken")}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Erreur ${response.status}: ${errorText}`);
+      throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur API respondToRating:", error);
+    throw error;
+  }
+};
+
+export const deleteRatingResponse = async (ratingId) => {
+  try {
+    console.log("Appel API deleteRatingResponse avec ID:", ratingId);
+
+    // Utiliser l'URL complète avec API_URL au lieu d'une URL relative
+    const response = await fetch(`${API_URL}/ratings/${ratingId}/respond`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("businessToken")}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Erreur ${response.status}: ${errorText}`);
+      throw new Error(`Erreur ${response.status}: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erreur API deleteRatingResponse:", error);
+    throw error;
+  }
+}
+
+// Fonction pour récupérer la liste des entreprises
+export const getBusinesses = async () => {
+  try {
+    const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api";
+    const response = await fetch(`${API_URL}/businesses`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching businesses:", error);
+    throw error;
+  }
+}
+
+export const addUserDocument = async (documentData) => {
+  try {
+    const response = await api.post("/user/documents", documentData)
+    return response.data
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du document:", error)
     throw error
   }
 }
@@ -847,7 +939,7 @@ export const updateUserProfile = async (profileData) => {
     const response = await api.put("/user/profile", profileData)
     return response.data
   } catch (error) {
-    console.error("updateUserProfile error:", error)
+    console.error("Erreur lors de la mise à jour du profil:", error)
     throw error
   }
 }
@@ -909,13 +1001,15 @@ export const updateUserSettings = async (settingsData) => {
 // Fonction pour mettre à jour le mot de passe de l'utilisateur
 export const updateUserPassword = async (passwordData) => {
   try {
-    const response = await api.put("/api/users/password", passwordData)
+    console.log("Mise à jour du mot de passe avec les données:", passwordData)
+    const response = await api.put("/user/profile/password", passwordData)
     return response.data
   } catch (error) {
     console.error("updateUserPassword error:", error)
     throw error
   }
 }
+
 
 // Ajouter ces fonctions pour le profil business
 
@@ -924,6 +1018,54 @@ export const getBusinessProfile = async () => {
   const response = await api.get("/business/profile")
   return response.data
 }
+// Fonction pour répondre à une réponse d'entreprise
+
+export const replyToBusinessResponse = async (ratingId, data) => {
+  try {
+    console.log("Tentative de réponse à l'avis ID:", ratingId);
+    console.log("Données envoyées:", data);
+    
+    // Utiliser l'instance api configurée avec la bonne URL de base
+    const response = await api.post(`/ratings/${ratingId}/user-reply`, data);
+    
+    console.log("Réponse reçue:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Erreur API replyToBusinessResponse:", error);
+    
+    // Afficher plus de détails sur l'erreur
+    if (error.response) {
+      console.error("Statut:", error.response.status);
+      console.error("Données:", error.response.data);
+    }
+    
+    throw error;
+  }
+}
+
+export const getUserRatings = async () => {
+  try {
+    const response = await api.get("/user/ratings", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true, // utile si tu utilises des cookies/session
+    })
+
+    return response.data
+  } catch (error) {
+    console.error("Erreur API getUserRatings:", error)
+
+    // Optionnel : afficher le message précis de l'erreur
+    if (error.response) {
+      console.error("Statut:", error.response.status)
+      console.error("Données:", error.response.data)
+    }
+
+    throw error
+  }
+}
+
 
 // Remplacer la fonction updateBusinessProfile par cette version corrigée
 export const updateBusinessProfile = async (businessData) => {

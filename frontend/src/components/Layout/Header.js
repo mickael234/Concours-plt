@@ -32,10 +32,6 @@ const Header = () => {
           <Link to="/">Concours CI</Link>
         </div>
         <div className="header-right">
-          <Link to="/boutique" className="boutique-link">
-            <span>Boutique</span>
-            <i className="shop-icon">🏪</i>
-          </Link>
           <div className="site-type">
             <span>Changer de site : </span>
             <select
@@ -51,7 +47,7 @@ const Header = () => {
             <>
               <span className="user-name">Bonjour, {user.name || user.firstName}</span>
               {isSuperAdmin && (
-                <Link to="/admin" className="btn-admin btn-superadmin">
+                <Link to="/admin" className="btn-superadmin">
                   Tableau de bord SuperAdmin
                 </Link>
               )}
@@ -91,4 +87,3 @@ const Header = () => {
 }
 
 export default Header
-

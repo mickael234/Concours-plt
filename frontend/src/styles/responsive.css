@@ -1,0 +1,112 @@
+/* Fichier dédié aux styles responsives */
+
+/* Styles pour les écrans larges (desktop) */
+@media (min-width: 1200px) {
+    .container {
+      max-width: 1140px;
+    }
+  }
+  
+  /* Styles pour les écrans moyens (laptops, petits desktops) */
+  @media (max-width: 1199px) and (min-width: 992px) {
+    .container {
+      max-width: 960px;
+    }
+  }
+  
+  /* Styles pour les tablettes */
+  @media (max-width: 991px) and (min-width: 768px) {
+    .container {
+      max-width: 720px;
+    }
+  
+    /* Ajustements pour la navigation */
+    .nav-menu {
+      padding: 0 15px;
+    }
+  
+    /* Ajustements pour les cartes et grilles */
+    .card-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  /* Styles pour les mobiles */
+  @media (max-width: 767px) {
+    .container {
+      max-width: 540px;
+    }
+  
+    /* Ajustements pour la navigation */
+    .nav-menu {
+      flex-direction: column;
+      padding: 10px;
+    }
+  
+    .nav-item {
+      margin: 5px 0;
+    }
+  
+    /* Ajustements pour les cartes et grilles */
+    .card-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    /* Ajustements pour les formulaires */
+    .form-row {
+      flex-direction: column;
+    }
+  
+    .form-group {
+      width: 100%;
+      margin-right: 0;
+    }
+  
+    /* Ajustements pour les boutons */
+    .btn-group {
+      flex-direction: column;
+    }
+  
+    .btn {
+      width: 100%;
+      margin: 5px 0;
+    }
+  
+    /* Ajustements pour le footer */
+    .footer-columns {
+      flex-direction: column;
+    }
+  
+    .footer-column {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  
+  /* Styles pour les très petits écrans */
+  @media (max-width: 575px) {
+    .container {
+      width: 100%;
+      padding: 0 15px;
+    }
+  
+    /* Réduire les marges et paddings */
+    .section {
+      padding: 30px 0;
+    }
+  
+    /* Ajuster la taille des titres */
+    h1 {
+      font-size: 1.8rem;
+    }
+  
+    h2 {
+      font-size: 1.5rem;
+    }
+  
+    /* Cacher certains éléments non essentiels */
+    .hide-xs {
+      display: none !important;
+    }
+  }
+  

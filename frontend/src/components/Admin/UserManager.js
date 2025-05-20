@@ -163,90 +163,172 @@ const UserManager = () => {
         {users.length === 0 ? (
           <p>No users found</p>
         ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>NOM</th>
-                <th>EMAIL</th>
-                <th>ADMIN</th>
-                <th>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Version desktop - tableau */}
+            <div className="desktop-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>NOM</th>
+                    <th>EMAIL</th>
+                    <th>ADMIN</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <tr key={user._id}>
+                      {editingUser === user._id ? (
+                        // Edit form row
+                        <>
+                          <td colSpan="4">
+                            <form onSubmit={handleUpdateUser} className="edit-form">
+                              <div className="form-group">
+                                <label htmlFor={`edit-name-${user._id}`}>Name</label>
+                                <input
+                                  type="text"
+                                  id={`edit-name-${user._id}`}
+                                  name="name"
+                                  value={editFormData.name}
+                                  onChange={handleEditFormChange}
+                                  required
+                                />
+                              </div>
+
+                              <div className="form-group">
+                                <label htmlFor={`edit-email-${user._id}`}>Email</label>
+                                <input
+                                  type="email"
+                                  id={`edit-email-${user._id}`}
+                                  name="email"
+                                  value={editFormData.email}
+                                  onChange={handleEditFormChange}
+                                  required
+                                />
+                              </div>
+
+                              <div className="form-group checkbox">
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    name="isAdmin"
+                                    checked={editFormData.isAdmin}
+                                    onChange={handleEditFormChange}
+                                  />
+                                  Is Admin
+                                </label>
+                              </div>
+
+                              <div className="edit-actions">
+                                <button type="submit" className="save-button">
+                                  Save
+                                </button>
+                                <button type="button" onClick={handleCancelEdit} className="cancel-button">
+                                  Cancel
+                                </button>
+                              </div>
+                            </form>
+                          </td>
+                        </>
+                      ) : (
+                        // Normal display row
+                        <>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>{user.isAdmin ? "Yes" : "No"}</td>
+                          <td className="action-buttons">
+                            <button onClick={() => handleEditClick(user)} className="edit-button">
+                              Modifier
+                            </button>
+                            <button onClick={() => handleDeleteUser(user._id)} className="delete-button">
+                              Supprimer
+                            </button>
+                          </td>
+                        </>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Version mobile - cartes */}
+            <div className="mobile-cards">
               {users.map((user) => (
-                <tr key={user._id}>
+                <div key={user._id} className="user-card">
                   {editingUser === user._id ? (
-                    // Edit form row
-                    <>
-                      <td colSpan="4">
-                        <form onSubmit={handleUpdateUser} className="edit-form">
-                          <div className="form-group">
-                            <label htmlFor={`edit-name-${user._id}`}>Name</label>
-                            <input
-                              type="text"
-                              id={`edit-name-${user._id}`}
-                              name="name"
-                              value={editFormData.name}
-                              onChange={handleEditFormChange}
-                              required
-                            />
-                          </div>
+                    // Formulaire d'édition mobile
+                    <form onSubmit={handleUpdateUser} className="edit-form">
+                      <div className="form-group">
+                        <label htmlFor={`edit-name-mobile-${user._id}`}>Name</label>
+                        <input
+                          type="text"
+                          id={`edit-name-mobile-${user._id}`}
+                          name="name"
+                          value={editFormData.name}
+                          onChange={handleEditFormChange}
+                          required
+                        />
+                      </div>
 
-                          <div className="form-group">
-                            <label htmlFor={`edit-email-${user._id}`}>Email</label>
-                            <input
-                              type="email"
-                              id={`edit-email-${user._id}`}
-                              name="email"
-                              value={editFormData.email}
-                              onChange={handleEditFormChange}
-                              required
-                            />
-                          </div>
+                      <div className="form-group">
+                        <label htmlFor={`edit-email-mobile-${user._id}`}>Email</label>
+                        <input
+                          type="email"
+                          id={`edit-email-mobile-${user._id}`}
+                          name="email"
+                          value={editFormData.email}
+                          onChange={handleEditFormChange}
+                          required
+                        />
+                      </div>
 
-                          <div className="form-group checkbox">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="isAdmin"
-                                checked={editFormData.isAdmin}
-                                onChange={handleEditFormChange}
-                              />
-                              Is Admin
-                            </label>
-                          </div>
+                      <div className="form-group checkbox">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="isAdmin"
+                            checked={editFormData.isAdmin}
+                            onChange={handleEditFormChange}
+                          />
+                          Is Admin
+                        </label>
+                      </div>
 
-                          <div className="edit-actions">
-                            <button type="submit" className="save-button">
-                              Save
-                            </button>
-                            <button type="button" onClick={handleCancelEdit} className="cancel-button">
-                              Cancel
-                            </button>
-                          </div>
-                        </form>
-                      </td>
-                    </>
+                      <div className="edit-actions">
+                        <button type="submit" className="save-button">
+                          Save
+                        </button>
+                        <button type="button" onClick={handleCancelEdit} className="cancel-button">
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
                   ) : (
-                    // Normal display row
+                    // Affichage normal mobile
                     <>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.isAdmin ? "Yes" : "No"}</td>
-                      <td className="action-buttons">
-                        <button onClick={() => handleEditClick(user)} className="edit-button">
+                      <div className="user-card-header">
+                        <div className="user-card-name">{user.name}</div>
+                        {user.isAdmin && <div className="user-card-admin">Admin</div>}
+                      </div>
+                      <div className="user-card-email">{user.email}</div>
+                      <div className="user-card-actions">
+                        <button onClick={() => handleEditClick(user)} className="user-card-btn user-card-btn-edit">
                           Modifier
                         </button>
-                        <button onClick={() => handleDeleteUser(user._id)} className="delete-button">
+                        <button
+                          onClick={() => handleDeleteUser(user._id)}
+                          className="user-card-btn user-card-btn-delete"
+                        >
                           Supprimer
                         </button>
-                      </td>
+                      </div>
                     </>
                   )}
-                </tr>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -254,4 +336,3 @@ const UserManager = () => {
 }
 
 export default UserManager
-

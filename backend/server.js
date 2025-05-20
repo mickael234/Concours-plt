@@ -27,14 +27,15 @@ import inscriptionRoutes from "./routes/inscriptionRoutes.js"
 import statsRoutes from "./routes/statsRoutes.js"
 import superAdminRoutes from "./routes/superAdminRoutes.js"
 import downloadRoutes from "./routes/downloadRoutes.js"
-
+import ratingRoutes from "./routes/ratingRoutes.js"
 // Routes utilisateur
 import userAlertRoutes from "./routes/user/alertRoutes.js"
 import userDocumentRoutes from "./routes/user/documentRoutes.js"
 import userFormationRoutes from "./routes/user/formationRoutes.js"
 import userProfileRoutes from "./routes/user/profileRoutes.js"
 import userApplicationRoutes from "./routes/user/applicationRoutes.js"
-
+import userRatingRoutes from "./routes/user/ratingRoutes.js"
+import Business from "./models/Business.js"
 // Activer les couleurs dans la console
 colors.enable()
 
@@ -55,12 +56,22 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Configurez morgan pour afficher plus de détails sur les requêtes
-app.use(morgan(":method :url :status :res[content-length] - :response-time ms :body"))
-morgan.token("body", (req) => {
+// Configurez morgan pour afficher plus de détails sur les requêtes, mais masquer les données sensibles
+app.use(morgan(":method :url :status :res[content-length] - :response-time ms :safe-body"))
+morgan.token("safe-body", (req) => {
   if (req.method === "POST" || req.method === "PUT") {
-    return JSON.stringify(req.body)
+    // Créer une copie du corps de la requête
+    const safeBody = { ...req.body };
+    
+    // Masquer les champs sensibles
+    if (safeBody.password) safeBody.password = "********";
+    if (safeBody.currentPassword) safeBody.currentPassword = "********";
+    if (safeBody.newPassword) safeBody.newPassword = "********";
+    if (safeBody.confirmPassword) safeBody.confirmPassword = "********";
+    
+    return JSON.stringify(safeBody);
   }
-  return ""
+  return "";
 })
 
 // Configuration CORS
@@ -112,13 +123,14 @@ app.use("/api/stats", statsRoutes)
 app.use("/api/superadmin", superAdminRoutes)
 app.use("/api/download", downloadRoutes)
 app.use("/api/admin/inscriptions", inscriptionRoutes)
-
+app.use("/api/ratings", ratingRoutes)
 // Routes utilisateur
 app.use("/api/user/alerts", userAlertRoutes)
 app.use("/api/user/documents", userDocumentRoutes)
 app.use("/api/user/formations", userFormationRoutes)
 app.use("/api/user/profile", userProfileRoutes)
 app.use("/api/user/applications", userApplicationRoutes)
+app.use("/api/user/ratings", userRatingRoutes)
 
 // Servir les fichiers statiques
 const __filename = fileURLToPath(import.meta.url)
@@ -140,6 +152,23 @@ console.log("Server static path:", path.join(rootDir, "uploads"))
 // Route de base pour vérifier que l'API fonctionne
 app.get("/", (req, res) => {
   res.json({ message: "L'API fonctionne..." })
+})
+// Dans votre fichier server.js, ajoutez cette route
+app.get("/api/businesses", async (req, res) => {
+  try {
+    // Récupérer les entreprises avec seulement les champs nécessaires
+    const businesses = await Business.find({})
+      .select("_id name structureName logo")
+      .sort({ name: 1 });
+    
+    res.json(businesses);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des entreprises:", error);
+    res.status(500).json({ 
+      message: "Erreur lors de la récupération des entreprises",
+      error: error.message 
+    });
+  }
 })
 
 // Middleware pour gérer les erreurs

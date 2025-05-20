@@ -17,7 +17,7 @@ import {
   MessageSquare,
 } from "lucide-react"
 import "./DocumentDetails.css"
-import { getDocumentById, rateDocument } from "../services/api"
+import { getDocumentById, rateDocument, addUserDocument } from "../services/api"
 import { processImageUrl } from "../utils/imageUtils"
 
 const DocumentDetails = () => {
@@ -31,6 +31,8 @@ const DocumentDetails = () => {
   const [userReview, setUserReview] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [reviewSuccess, setReviewSuccess] = useState(false)
+  const [downloadSuccess, setDownloadSuccess] = useState(false)
+  const [downloadLoading, setDownloadLoading] = useState(false)
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -52,10 +54,33 @@ const DocumentDetails = () => {
 
   const handleDownload = async () => {
     try {
-      // Track download if needed
+      setDownloadLoading(true)
+      setError("")
+      setDownloadSuccess(false)
+
+      console.log("Téléchargement du document:", document._id)
+
+      // Enregistrer le téléchargement dans la base de données
+      const response = await addUserDocument({ documentId: document._id })
+      console.log("Réponse du téléchargement:", response)
+
+      // Ouvrir le document dans un nouvel onglet
       window.open(document.fileUrl, "_blank")
+
+      // Mettre à jour le compteur de téléchargements localement
+      setDocument({
+        ...document,
+        downloads: (document.downloads || 0) + 1,
+      })
+
+      // Afficher un message de succès
+      setDownloadSuccess(true)
+      setTimeout(() => setDownloadSuccess(false), 3000)
     } catch (error) {
-      console.error("Error downloading document:", error)
+      console.error("Erreur lors du téléchargement:", error)
+      setError("Impossible de télécharger le document. Veuillez réessayer.")
+    } finally {
+      setDownloadLoading(false)
     }
   }
 
@@ -253,10 +278,17 @@ const DocumentDetails = () => {
                   )}
                 </div>
 
-                <button className="download-button" onClick={handleDownload}>
+                <button className="download-button" onClick={handleDownload} disabled={downloadLoading}>
                   <Download size={20} />
-                  <span>Télécharger</span>
+                  <span>{downloadLoading ? "Téléchargement..." : "Télécharger"}</span>
                 </button>
+
+                {downloadSuccess && (
+                  <div className="download-success-message">
+                    <ThumbsUp size={16} />
+                    <span>Document ajouté à votre bibliothèque</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -430,9 +462,17 @@ const DocumentDetails = () => {
                         <div key={index} className="review-item">
                           <div className="review-header">
                             <div className="reviewer-info">
-                              <div className="reviewer-avatar">{review.user?.name?.charAt(0) || "U"}</div>
+                              <div className="reviewer-avatar">
+                                {review.user?.firstName
+                                  ? review.user.firstName.charAt(0)
+                                  : review.user?.name?.charAt(0) || "U"}
+                              </div>
                               <div className="reviewer-details">
-                                <h4>{review.user?.name || "Utilisateur anonyme"}</h4>
+                                <h4>
+                                  {review.user?.firstName && review.user?.lastName
+                                    ? `${review.user.firstName} ${review.user.lastName}`
+                                    : review.user?.name || "Utilisateur anonyme"}
+                                </h4>
                                 <p className="review-date">{new Date(review.createdAt).toLocaleDateString()}</p>
                               </div>
                             </div>
@@ -495,4 +535,3 @@ const DocumentDetails = () => {
 }
 
 export default DocumentDetails
-

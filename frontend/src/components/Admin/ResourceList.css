@@ -83,6 +83,7 @@
   font-style: italic;
 }
 
+/* Styles responsives */
 @media (max-width: 768px) {
   .resource-table {
     font-size: 14px;
@@ -96,5 +97,86 @@
   .resource-title {
     font-size: 20px;
   }
+
+  /* Masquer le tableau sur mobile */
+  .desktop-table {
+    display: none;
+  }
+
+  /* Afficher les cartes sur mobile */
+  .mobile-cards {
+    display: block;
+  }
 }
 
+@media (min-width: 769px) {
+  /* Masquer les cartes sur desktop */
+  .mobile-cards {
+    display: none;
+  }
+
+  /* Afficher le tableau sur desktop */
+  .desktop-table {
+    display: block;
+  }
+}
+
+/* Styles pour les cartes mobiles */
+.resource-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.resource-card-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #2d3748;
+}
+
+.resource-card-info {
+  margin-bottom: 12px;
+}
+
+.resource-card-label {
+  font-size: 12px;
+  color: #718096;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.resource-card-value {
+  font-size: 14px;
+  color: #4a5568;
+  margin-bottom: 8px;
+}
+
+.resource-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.resource-card-btn {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+}
+
+.resource-card-btn-edit {
+  background-color: #ebf4ff;
+  color: #5a67d8;
+}
+
+.resource-card-btn-delete {
+  background-color: #fff5f5;
+  color: #e53e3e;
+}

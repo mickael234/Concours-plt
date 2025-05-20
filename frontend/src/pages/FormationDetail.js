@@ -3,10 +3,11 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link } from "react-router-dom"
 import { getFormationById } from "../services/api"
-import { Calendar, Clock, User, MapPin, Award, FileText, Star, BookOpen } from "lucide-react"
+import { Calendar, Clock, User, MapPin, Award, FileText, Star, BookOpen } from 'lucide-react'
 import { processImageUrl, revokeObjectUrl } from "../utils/imageUtils"
 import "./FormationDetail.css"
 import RatingForm from "../components/RatingForm"
+import AvisResponse from "../components/AvisResponse"
 
 const FormationDetails = () => {
   const { id } = useParams()
@@ -15,6 +16,8 @@ const FormationDetails = () => {
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("description")
   const imageUrlsRef = useRef([])
+  const [isBusinessOwner, setIsBusinessOwner] = useState(false)
+  const [currentUserId, setCurrentUserId] = useState(null)
 
   useEffect(() => {
     const fetchFormation = async () => {
@@ -45,11 +48,46 @@ const FormationDetails = () => {
     }
   }, [id])
 
-  // Fonction pour rafraîchir les données de la formation après une notation
+  // Vérifier si l'utilisateur connecté est le propriétaire de l'entreprise
+  useEffect(() => {
+    const checkBusinessOwner = () => {
+      try {
+        const businessInfo = JSON.parse(localStorage.getItem("businessInfo") || "{}")
+        const isOwner = businessInfo && businessInfo._id === formation?.business?._id
+        setIsBusinessOwner(isOwner)
+        console.log("Est propriétaire de l'entreprise:", isOwner)
+      } catch (error) {
+        console.error("Erreur lors de la vérification du propriétaire:", error)
+        setIsBusinessOwner(false)
+      }
+    }
+
+    // Récupérer l'ID de l'utilisateur connecté
+    const getUserId = () => {
+      try {
+        const userInfo = JSON.parse(localStorage.getItem("userInfo") || "{}")
+        if (userInfo && userInfo._id) {
+          setCurrentUserId(userInfo._id)
+          console.log("ID de l'utilisateur connecté:", userInfo._id)
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération de l'ID utilisateur:", error)
+        setCurrentUserId(null)
+      }
+    }
+
+    if (formation) {
+      checkBusinessOwner()
+      getUserId()
+    }
+  }, [formation])
+
+  // Fonction pour rafraîchir les données de la formation après une notation ou une réponse
   const handleRatingSubmitted = async () => {
     try {
       const updatedFormation = await getFormationById(id)
       setFormation(updatedFormation)
+      console.log("Formation mise à jour après notation ou réponse")
     } catch (error) {
       console.error("Erreur lors du rafraîchissement des données:", error)
     }
@@ -386,20 +424,44 @@ const FormationDetails = () => {
                     </div>
 
                     <div className="reviews-list">
-                      {formation.ratings.map((review, index) => (
-                        <div key={index} className="review-item">
-                          <div className="review-header">
-                            <div className="reviewer-info">
-                              <h4>{review.user?.name || "Utilisateur"}</h4>
-                              <p className="review-date">{formatDate(review.createdAt)}</p>
+                      {formation.ratings.map((review, index) => {
+                        // Logs de débogage pour vérifier les valeurs
+                        console.log("Review user:", review.user);
+                        console.log("Current user ID:", currentUserId);
+                        console.log("Is user owner:", currentUserId && (currentUserId === (review.user?._id || review.user)));
+                        
+                        return (
+                          <div key={index} className="review-item">
+                            <div className="review-header">
+                              <div className="reviewer-info">
+                                <h4>
+                                  {review.user?.firstName && review.user?.lastName
+                                    ? `${review.user.firstName} ${review.user.lastName}`
+                                    : review.user?.name || "Utilisateur anonyme"}
+                                </h4>
+                                <p className="review-date">{formatDate(review.createdAt)}</p>
+                              </div>
+                              <div className="review-rating">{renderStars(review.rating)}</div>
                             </div>
-                            <div className="review-rating">{renderStars(review.rating)}</div>
+                            <div className="review-content">
+                              <p>{review.comment || "Aucun commentaire"}</p>
+                            </div>
+                            
+                            {/* Ajout du composant AvisResponse pour les réponses aux avis */}
+                            <AvisResponse 
+                              avis={{
+                                ...review,
+                                formationId: formation._id,
+                                user: review.user  // Assurez-vous que l'utilisateur est correctement passé
+                              }}
+                              businessId={formation.business?._id}
+                              onResponseSubmitted={handleRatingSubmitted}
+                              canRespond={isBusinessOwner}
+                              isUserOwner={currentUserId && (currentUserId === (review.user?._id || review.user))}
+                            />
                           </div>
-                          <div className="review-content">
-                            <p>{review.comment || "Aucun commentaire"}</p>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 ) : (
@@ -484,4 +546,3 @@ const FormationDetails = () => {
 }
 
 export default FormationDetails
-

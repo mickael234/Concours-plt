@@ -189,3 +189,96 @@
   border-left: 4px solid #c62828;
 }
 
+/* Styles responsives */
+@media (max-width: 768px) {
+  .user-manager {
+    padding: 15px;
+  }
+
+  .create-user-form {
+    padding: 15px;
+  }
+
+  /* Masquer le tableau sur mobile */
+  .desktop-table {
+    display: none;
+  }
+
+  /* Afficher les cartes sur mobile */
+  .mobile-cards {
+    display: block;
+  }
+
+  .user-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .user-card-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #2d3748;
+  }
+
+  .user-card-admin {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background-color: #ebf8ff;
+    color: #3182ce;
+  }
+
+  .user-card-email {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 16px;
+  }
+
+  .user-card-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .user-card-btn {
+    flex: 1;
+    padding: 8px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+  }
+
+  .user-card-btn-edit {
+    background-color: #ebf4ff;
+    color: #5a67d8;
+  }
+
+  .user-card-btn-delete {
+    background-color: #fff5f5;
+    color: #e53e3e;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Masquer les cartes sur desktop */
+  .mobile-cards {
+    display: none;
+  }
+
+  /* Afficher le tableau sur desktop */
+  .desktop-table {
+    display: block;
+  }
+}

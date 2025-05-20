@@ -22,6 +22,7 @@ import ConcoursManager from "./components/Admin/ConcoursManager"
 import FileViewer from "./components/FileViewer"
 import "./App.css"
 import "./styles/globals.css"
+import "./styles/responsive.css" // Importation des styles responsives
 
 // Business pages
 import BusinessHome from "./pages/Business/BusinessHome"
@@ -40,6 +41,7 @@ import BusinessDocumentEdit from "./pages/Business/BusinessDocumentEdit"
 import BusinessParametres from "./pages/Business/BusinessParametres"
 import BusinessAbout from "./pages/Business/BusinessAbout"
 
+
 // Importez les composants du tableau de bord utilisateur
 import UserDashboard from "./pages/user/Dashboard"
 import UserAlerts from "./pages/user/Alerts"
@@ -49,6 +51,7 @@ import UserDocuments from "./pages/user/Documents"
 import UserFormations from "./pages/user/Formations"
 import UserProfile from "./pages/user/Profile"
 import UserSettings from "./pages/user/Settings"
+import UserAvis from "./pages/user/UserAvisPage"
 
 // Importez les nouveaux composants pour les formations
 import FormationDetail from "./pages/FormationDetail"
@@ -92,6 +95,14 @@ const AppLayout = () => {
               </PrivateRoute>
             }
           />
+          <Route
+          path="/user/avis"
+          element={
+            <PrivateRoute>
+              <UserAvis />
+            </PrivateRoute>
+          }
+        />
 
           <Route
             path="/preparation/structures"
@@ -356,4 +367,3 @@ function App() {
 }
 
 export default App
-

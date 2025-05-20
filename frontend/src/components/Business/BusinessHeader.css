@@ -1,137 +1,186 @@
 .business-header {
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 15px 0;
-  }
-  
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-dark, var(--primary) / 0.8)));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 15px 0;
+  width: 100%;
+  position: relative;
+  z-index: 100;
+}
+
+.business-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.business-logo a {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  text-decoration: none;
+  display: block; /* Assure la visibilité du texte */
+}
+
+.business-nav {
+  display: flex;
+  gap: 30px;
+}
+
+.business-nav .nav-link {
+  color: #555;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 5px 0;
+  position: relative;
+  display: inline-block; /* Assure la visibilité du texte */
+}
+
+.business-nav .nav-link:hover {
+  color: hsl(var(--primary));
+}
+
+.business-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: hsl(var(--primary));
+  transition: width 0.3s;
+}
+
+.business-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+.business-header-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.business-user-menu {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.business-user-name {
+  font-weight: 500;
+  color: #555;
+  display: inline-block; /* Assure la visibilité du texte */
+}
+
+.business-auth-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.business-header .btn-connect,
+.btn-connect {
+  background-color: transparent;
+  border: 1px solid hsl(var(--primary));
+  color: hsl(var(--primary));
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.3s;
+  display: inline-block; /* Assure la visibilité du texte */
+}
+
+.business-header .btn-connect:hover,
+.btn-connect:hover {
+  background-color: hsl(var(--primary));
+  color: white;
+}
+
+.business-header .btn-register,
+.btn-register {
+  background-color: hsl(var(--primary));
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  display: inline-block; /* Assure la visibilité du texte */
+}
+
+.business-header .btn-register:hover,
+.btn-register:hover {
+  background-color: hsl(var(--primary) / 0.9);
+}
+
+/* Mode sombre */
+.dark .business-header {
+  background-color: hsl(var(--card));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.dark .business-logo a {
+  color: hsl(var(--foreground));
+}
+
+.dark .business-nav .nav-link {
+  color: hsl(var(--foreground));
+}
+
+.dark .business-user-name {
+  color: hsl(var(--foreground));
+}
+
+@media (max-width: 768px) {
   .business-header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-  }
-  
-  .business-logo a {
-    font-size: 22px;
-    font-weight: 700;
-    color: #333;
-    text-decoration: none;
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
   }
   
   .business-nav {
-    display: flex;
-    gap: 30px;
-  }
-  
-  .nav-link {
-    color: #555;
-    text-decoration: none;
-    font-weight: 500;
-    padding: 5px 0;
-    position: relative;
-  }
-  
-  .nav-link:hover {
-    color: #3498db;
-  }
-  
-  .nav-link::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #3498db;
-    transition: width 0.3s;
-  }
-  
-  .nav-link:hover::after {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
   }
   
   .business-header-right {
-    display: flex;
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .business-nav {
+    flex-direction: column;
     align-items: center;
-    gap: 20px;
-  }
-  
-  .business-user-menu {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-  
-  .business-user-name {
-    font-weight: 500;
-    color: #555;
-  }
-  
-  .btn-dashboard {
-    background-color: #3498db;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: background-color 0.3s;
-  }
-  
-  .btn-dashboard:hover {
-    background-color: #2980b9;
-  }
-  
-  .btn-logout {
-    background-color: transparent;
-    border: 1px solid #e74c3c;
-    color: #e74c3c;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.3s;
-  }
-  
-  .btn-logout:hover {
-    background-color: #e74c3c;
-    color: white;
-  }
-  
-  .business-auth-buttons {
-    display: flex;
     gap: 10px;
   }
   
-  .btn-connect {
-    background-color: transparent;
-    border: 1px solid #3498db;
-    color: #3498db;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: all 0.3s;
+  .business-user-menu {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
   }
   
-  .btn-connect:hover {
-    background-color: #3498db;
-    color: white;
+  .business-auth-buttons {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+    gap: 8px;
   }
   
-  .btn-register {
-    background-color: #3498db;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: background-color 0.3s;
+  .business-header .btn-connect,
+  .business-header .btn-register,
+  .business-header .btn-dashboard,
+  .business-header .btn-logout {
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
   }
-  
-  .btn-register:hover {
-    background-color: #2980b9;
-  }
-  
-  
+}

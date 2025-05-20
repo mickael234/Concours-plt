@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { Star } from "lucide-react"
 import { fetchBusinessFormations } from "../../services/api"
+import AvisResponse from "../../components/AvisResponse"
 import "./BusinessAvis.css"
 
-const BusinessAvis = () => {
+const BusinessAvis = ({ businessId }) => {
   const [avis, setAvis] = useState([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
@@ -22,71 +23,94 @@ const BusinessAvis = () => {
     },
   })
 
-  useEffect(() => {
-    // Charger les avis depuis les formations
-    const fetchAvis = async () => {
-      try {
-        setLoading(true)
+  const fetchAvis = async () => {
+    try {
+      setLoading(true)
 
-        // Récupérer les formations de l'entreprise
-        const formationsResponse = await fetchBusinessFormations()
-        const formations = formationsResponse.data || formationsResponse || []
+      // Récupérer les formations de l'entreprise
+      const formationsResponse = await fetchBusinessFormations()
+      const formations = formationsResponse.data || formationsResponse || []
 
-        console.log("Formations récupérées:", formations)
+      console.log("Formations récupérées:", formations)
 
-        // Extraire tous les avis des formations
-        let allAvis = []
-        let totalRating = 0
-        let totalCount = 0
-        const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+      // Extraire tous les avis des formations
+      let allAvis = []
+      let totalRating = 0
+      let totalCount = 0
+      const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
 
-        formations.forEach((formation) => {
-          if (formation.ratings && formation.ratings.length > 0) {
-            // Ajouter les avis de cette formation
-            const formationAvis = formation.ratings.map((rating) => ({
+      formations.forEach((formation) => {
+        if (formation.ratings && formation.ratings.length > 0) {
+          // Ajouter les avis de cette formation
+          const formationAvis = formation.ratings.map((rating) => {
+            // Vérifier si l'utilisateur existe et extraire les informations
+            let userName = "Utilisateur anonyme"
+
+            if (rating.user) {
+              // Si c'est un objet complet (après populate)
+              if (typeof rating.user === "object") {
+                if (rating.user.firstName && rating.user.lastName) {
+                  userName = `${rating.user.firstName} ${rating.user.lastName}`
+                } else if (rating.user.name) {
+                  userName = rating.user.name
+                }
+              }
+              // Si c'est juste un ID (pas de populate)
+              else {
+                userName = "Utilisateur"
+              }
+            }
+
+            return {
               id: rating._id || `rating-${Math.random()}`,
-              userName: rating.user?.name || "Utilisateur",
+              formationId: formation._id,
+              userName: userName,
+              userId: typeof rating.user === "object" ? rating.user._id : rating.user,
               date: rating.createdAt || new Date(),
               rating: rating.rating || 0,
               comment: rating.comment || "",
               formation: formation.title,
-            }))
+              businessResponse: rating.businessResponse || null,
+              hasQuestion: rating.comment && rating.comment.includes("?"),
+            }
+          })
 
-            allAvis = [...allAvis, ...formationAvis]
+          allAvis = [...allAvis, ...formationAvis]
 
-            // Mettre à jour les statistiques
-            totalRating += formation.rating * formation.numReviews
-            totalCount += formation.numReviews
+          // Mettre à jour les statistiques
+          totalRating += formation.rating * formation.numReviews
+          totalCount += formation.numReviews
 
-            // Mettre à jour la distribution
-            formation.ratings.forEach((rating) => {
-              const roundedRating = Math.round(rating.rating)
-              if (distribution[roundedRating] !== undefined) {
-                distribution[roundedRating]++
-              }
-            })
-          }
-        })
+          // Mettre à jour la distribution
+          formation.ratings.forEach((rating) => {
+            const roundedRating = Math.round(rating.rating)
+            if (distribution[roundedRating] !== undefined) {
+              distribution[roundedRating]++
+            }
+          })
+        }
+      })
 
-        // Calculer la note moyenne globale
-        const globalRating = totalCount > 0 ? totalRating / totalCount : 0
+      // Calculer la note moyenne globale
+      const globalRating = totalCount > 0 ? totalRating / totalCount : 0
 
-        setAvis(allAvis)
-        setStats({
-          global: globalRating,
-          enseignement: globalRating, // Simplification, idéalement ces valeurs seraient calculées séparément
-          employabilite: globalRating,
-          reseau: globalRating,
-          distribution,
-        })
+      setAvis(allAvis)
+      setStats({
+        global: globalRating,
+        enseignement: globalRating, // Simplification, idéalement ces valeurs seraient calculées séparément
+        employabilite: globalRating,
+        reseau: globalRating,
+        distribution,
+      })
 
-        setLoading(false)
-      } catch (error) {
-        console.error("Erreur lors du chargement des avis:", error)
-        setLoading(false)
-      }
+      setLoading(false)
+    } catch (error) {
+      console.error("Erreur lors du chargement des avis:", error)
+      setLoading(false)
     }
+  }
 
+  useEffect(() => {
     fetchAvis()
   }, [])
 
@@ -115,6 +139,15 @@ const BusinessAvis = () => {
       </div>
     )
   }
+
+  const handleResponseSubmitted = () => {
+    // Recharger les avis après une réponse
+    fetchAvis()
+  }
+
+  // Filtrer les avis avec questions
+  const [showOnlyQuestions, setShowOnlyQuestions] = useState(false)
+  const filteredAvis = showOnlyQuestions ? avis.filter((avis) => avis.hasQuestion) : avis
 
   if (loading) {
     return <div className="loading">Chargement des avis...</div>
@@ -179,27 +212,47 @@ const BusinessAvis = () => {
           <p>Les avis apparaîtront ici lorsque vos clients évalueront vos formations.</p>
         </div>
       ) : (
-        <div className="avis-list">
-          {avis.map((avis) => (
-            <div key={avis.id} className="avis-item">
-              <div className="avis-header">
-                <div className="avis-user">
-                  <span className="user-name">{avis.userName}</span>
-                  <span className="avis-date">{new Date(avis.date).toLocaleDateString()}</span>
+        <>
+          <div className="avis-filter">
+            <label className="filter-checkbox">
+              <input
+                type="checkbox"
+                checked={showOnlyQuestions}
+                onChange={() => setShowOnlyQuestions(!showOnlyQuestions)}
+              />
+              Afficher uniquement les avis avec questions
+            </label>
+          </div>
+
+          <div className="avis-list">
+            {filteredAvis.map((avis) => (
+              <div key={avis.id} className="avis-item">
+                <div className="avis-header">
+                  <div className="avis-user">
+                    <span className="user-name">{avis.userName}</span>
+                    <span className="avis-date">{new Date(avis.date).toLocaleDateString()}</span>
+                  </div>
+                  <div className="avis-rating">{renderStars(avis.rating)}</div>
                 </div>
-                <div className="avis-rating">{renderStars(avis.rating)}</div>
+                <div className="avis-content">
+                  <p className="avis-formation">Formation: {avis.formation}</p>
+                  <p>{avis.comment || "Aucun commentaire"}</p>
+                </div>
+
+                {/* Composant de réponse aux avis */}
+                <AvisResponse
+                  avis={avis}
+                  businessId={businessId}
+                  onResponseSubmitted={handleResponseSubmitted}
+                  canRespond={true}
+                />
               </div>
-              <div className="avis-content">
-                <p className="avis-formation">Formation: {avis.formation}</p>
-                <p>{avis.comment || "Aucun commentaire"}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
     </div>
   )
 }
 
 export default BusinessAvis
-

@@ -1,6 +1,7 @@
 {
   "name": "concours-plt",
   "version": "1.0.0",
+  "proxy": "http://localhost:5000",
   "description": "Plateforme de concours pour la Côte d'Ivoire",
   "main": "server.js",
   "type": "module",

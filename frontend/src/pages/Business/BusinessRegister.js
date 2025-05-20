@@ -146,7 +146,7 @@ const BusinessRegister = () => {
   return (
     <div className="business-register-container">
       <div className="business-register-form-wrapper">
-        <h1 className="business-register-title">Créer votre compte Business Concours Hub</h1>
+        <h1 className="business-register-title">Créer votre compte Business Concours CI</h1>
 
         {errors.api && <div className="error-message">{errors.api}</div>}
 
@@ -176,7 +176,7 @@ const BusinessRegister = () => {
             </div>
 
             <div className="form-group">
-              <label>Ce que vous comptez faire comme activité sur Concours Hub:</label>
+              <label>Ce que vous comptez faire comme activité sur Concours CI:</label>
               <div className="checkbox-group">
                 <label className="checkbox-label">
                   <input

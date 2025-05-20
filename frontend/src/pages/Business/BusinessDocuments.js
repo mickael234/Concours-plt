@@ -175,6 +175,9 @@ const BusinessDocuments = () => {
   return (
     <div className="business-documents-container">
       <div className="documents-header">
+      <button onClick={() => navigate(-1)} className="back-btn">
+          ← Retour
+        </button>
         <h2 className="section-title">Documents de l'entreprise</h2>
         <Link to="/business/dashboard/documents/add" className="add-document-btn">
           <Plus size={18} />
